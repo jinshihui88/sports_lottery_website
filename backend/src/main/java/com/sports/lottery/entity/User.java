@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@TableName("sys_user")
+@TableName("user")
 @ApiModel(description = "用户实体")
 public class User {
 

@@ -30,7 +30,7 @@ public class BettingRecord {
     private Long userId;
 
     @Schema(description = "投注日期")
-    @TableField("bet_date")
+    @TableField("match_date")
     private LocalDate betDate;
 
     @Schema(description = "联赛名称")
@@ -50,28 +50,28 @@ public class BettingRecord {
     private String betType;
 
     @Schema(description = "投注选项")
-    @TableField("bet_option")
+    @TableField("bet_content")
     private String betOption;
 
-    @Schema(description = "投注金额（分）")
+    @Schema(description = "投注金额（元）")
     @TableField("bet_amount")
-    private Integer betAmount;
+    private BigDecimal betAmount;
 
     @Schema(description = "赔率")
     @TableField("odds")
     private BigDecimal odds;
 
-    @Schema(description = "投注结果：0-待开奖，1-中奖，2-未中奖")
+    @Schema(description = "投注结果：WIN-赢，LOSE-输，DRAW-平")
     @TableField("result")
-    private Integer result;
+    private String result;
 
-    @Schema(description = "实际奖金（分）")
-    @TableField("actual_winnings")
-    private Integer actualWinnings;
+    @Schema(description = "实际奖金（元）")
+    @TableField("win_amount")
+    private BigDecimal actualWinnings;
 
-    @Schema(description = "盈亏金额（分）")
+    @Schema(description = "盈亏金额（元）")
     @TableField("profit_loss")
-    private Integer profitLoss;
+    private BigDecimal profitLoss;
 
     @Schema(description = "比赛结果")
     @TableField("match_result")
