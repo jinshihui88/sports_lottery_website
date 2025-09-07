@@ -1,0 +1,26 @@
+前端技术栈 (Vue 3)
+核心框架: Vue 3 (Composition API)
+开发语言: TypeScript
+构建工具: Vite
+状态管理: Pinia
+UI组件库: Element Plus
+路由: Vue Router 4
+HTTP客户端: Axios
+图表库: ECharts (Vue-ECharts)
+CSS框架: Tailwind CSS
+日历组件: FullCalendar Vue
+表单验证: VeeValidate / Yup
+工具库: Lodash, Day.js
+
+后端技术栈 (Spring Boot)
+框架版本: Spring Boot 3.x
+Java版本: Java 17+
+数据库: MySQL 8.0
+缓存: Redis 6
+ORM: MyBatis-Plus
+安全框架: Spring Security + JWT
+API文档: Swagger 3 (SpringDoc)
+文件上传: 阿里云OSS
+消息队列: RabbitMQ (可选)
+任务调度: Spring Task
+日志: Logback + SLF4J
