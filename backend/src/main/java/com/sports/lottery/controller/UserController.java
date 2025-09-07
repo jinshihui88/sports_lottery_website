@@ -7,10 +7,13 @@ import com.sports.lottery.entity.User;
 import com.sports.lottery.service.UserService;
 import com.sports.lottery.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +27,7 @@ import java.util.Map;
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
+@Slf4j
 public class UserController {
     
     private final UserService userService;
@@ -42,6 +46,7 @@ public class UserController {
                 return Result.error("注册失败");
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return Result.error(e.getMessage());
         }
     }
@@ -58,9 +63,9 @@ public class UserController {
             Map<String, Object> data = new HashMap<>();
             data.put("token", token);
             data.put("userInfo", getUserInfo(user));
-            
             return Result.success(data);
         } catch (Exception e) {
+            e.printStackTrace();
             return Result.error(e.getMessage());
         }
     }
@@ -153,6 +158,8 @@ public class UserController {
     
     /**
      * 构建用户信息返回对象
+     * @param user
+     * @return Map<String, Object>
      */
     private Map<String, Object> getUserInfo(User user) {
         Map<String, Object> userInfo = new HashMap<>();
@@ -161,8 +168,9 @@ public class UserController {
         userInfo.put("email", user.getEmail());
         userInfo.put("nickname", user.getNickname());
         userInfo.put("avatar", user.getAvatar());
-        userInfo.put("createTime", user.getCreateTime());
-        userInfo.put("lastLoginTime", user.getLastLoginTime());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        userInfo.put("createTime", user.getCreateTime().format(formatter));
+        userInfo.put("lastLoginTime", user.getLastLoginTime().format(formatter));
         return userInfo;
     }
 }

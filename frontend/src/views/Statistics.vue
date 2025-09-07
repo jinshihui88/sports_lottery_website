@@ -1,5 +1,4 @@
 <template>
-  <Layout>
     <div class="statistics-page">
       <!-- 页面标题 -->
       <div class="page-header">
@@ -231,7 +230,6 @@
         </el-tabs>
       </el-card>
     </div>
-  </Layout>
 </template>
 
 <script setup lang="ts">
@@ -248,7 +246,6 @@ import {
   GridComponent
 } from 'echarts/components'
 import VChart from 'vue-echarts'
-import Layout from '@/components/Layout.vue'
 
 use([
   CanvasRenderer,

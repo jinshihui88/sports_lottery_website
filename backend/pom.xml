@@ -24,7 +24,7 @@
         <maven.compiler.target>8</maven.compiler.target>
         <mybatis-plus.version>3.5.3.1</mybatis-plus.version>
         <jwt.version>0.11.5</jwt.version>
-        <springfox.version>3.0.0</springfox.version>
+        <springdoc.version>1.7.0</springdoc.version>
         <hutool.version>5.8.22</hutool.version>
     </properties>
 
@@ -62,14 +62,6 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.33</version>
-            <scope>runtime</scope>
-        </dependency>
-        
-        <!-- PostgreSQL 驱动 -->
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <scope>runtime</scope>
         </dependency>
 
         <!-- JWT 0.11.x 模块化依赖 -->
@@ -95,9 +87,9 @@
 
         <!-- API 文档 -->
         <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-boot-starter</artifactId>
-            <version>${springfox.version}</version>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>${springdoc.version}</version>
         </dependency>
 
         <!-- 工具类 -->

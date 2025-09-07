@@ -4,7 +4,7 @@ server:
 spring:
   application:
     name: sports-lottery-backend
-  
+
   # 数据源配置 - 使用 MySQL
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -23,7 +23,7 @@ spring:
     redis:
       host: localhost
       port: 6379
-      password: 
+      password:
       database: 0
       timeout: 3000ms
       lettuce:
@@ -55,7 +55,8 @@ mybatis-plus:
 
 # JWT 配置
 jwt:
-  secret: sports-lottery-jwt-secret-key-2024
+  # HS512算法需要至少512位（64字节）的密钥
+  secret: sports-lottery-jwt-secret-key-2024-very-long-and-secure-string-for-hs512-algorithm-must-be-at-least-64-characters-long
   expiration: 86400 # 24小时（秒）
   refresh-expiration: 604800 # 7天（秒）
 
@@ -63,7 +64,7 @@ jwt:
 logging:
   level:
     com.sports.lottery: debug
-    org.springframework.security: debug
+  #    org.springframework.security: debug
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
 

@@ -16,10 +16,10 @@
         FROM betting_record 
         WHERE user_id = #{userId}
         <if test="startDate != null">
-            AND match_date >= #{startDate}
+            AND match_date &gt;= #{startDate}
         </if>
         <if test="endDate != null">
-            AND match_date <= #{endDate}
+            AND match_date &lt;= #{endDate}
         </if>
         GROUP BY DATE(match_date)
         ORDER BY DATE(match_date) DESC
@@ -40,10 +40,10 @@
         FROM betting_record 
         WHERE user_id = #{userId}
         <if test="startDate != null">
-            AND match_date >= #{startDate}
+            AND match_date &gt;= #{startDate}
         </if>
         <if test="endDate != null">
-            AND match_date <= #{endDate}
+            AND match_date &lt;= #{endDate}
         </if>
         GROUP BY league
         ORDER BY betCount DESC
@@ -64,10 +64,10 @@
         FROM betting_record 
         WHERE user_id = #{userId}
         <if test="startDate != null">
-            AND match_date >= #{startDate}
+            AND match_date &gt;= #{startDate}
         </if>
         <if test="endDate != null">
-            AND match_date <= #{endDate}
+            AND match_date &lt;= #{endDate}
         </if>
         GROUP BY bet_type
         ORDER BY betCount DESC

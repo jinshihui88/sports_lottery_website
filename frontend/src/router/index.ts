@@ -19,34 +19,41 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: false }
   },
   {
-    path: '/dashboard',
-    name: 'Dashboard',
-    component: () => import('@/views/Dashboard.vue'),
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/records',
-    name: 'Records',
-    component: () => import('@/views/Records.vue'),
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/statistics',
-    name: 'Statistics',
-    component: () => import('@/views/Statistics.vue'),
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/calendar',
-    name: 'Calendar',
-    component: () => import('@/views/Calendar.vue'),
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/profile',
-    name: 'Profile',
-    component: () => import('@/views/Profile.vue'),
-    meta: { requiresAuth: true }
+    path: '/',
+    component: () => import('@/components/Layout.vue'),
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: 'dashboard',
+        name: 'Dashboard',
+        component: () => import('@/views/Dashboard.vue'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: 'records',
+        name: 'Records',
+        component: () => import('@/views/Records.vue'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: 'statistics',
+        name: 'Statistics',
+        component: () => import('@/views/Statistics.vue'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: 'calendar',
+        name: 'Calendar',
+        component: () => import('@/views/Calendar.vue'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: 'profile',
+        name: 'Profile',
+        component: () => import('@/views/Profile.vue'),
+        meta: { requiresAuth: true }
+      }
+    ]
   }
 ]
 

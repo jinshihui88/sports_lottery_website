@@ -1,5 +1,4 @@
 <template>
-  <Layout>
     <div class="records-page">
       <!-- 页面标题和操作按钮 -->
       <div class="page-header">
@@ -152,14 +151,12 @@
         @confirm="handleBatchAdd"
       />
     </div>
-  </Layout>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Upload, Download } from '@element-plus/icons-vue'
-import Layout from '@/components/Layout.vue'
 import RecordDialog from '@/components/RecordDialog.vue'
 import BatchAddDialog from '@/components/BatchAddDialog.vue'
 import { useRecordsStore } from '@/stores/records'

@@ -1,5 +1,4 @@
 <template>
-  <Layout>
     <div class="profile-page">
       <!-- 页面标题 -->
       <div class="page-header">
@@ -233,13 +232,11 @@
         </template>
       </el-dialog>
     </div>
-  </Layout>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'element-plus'
-import Layout from '@/components/Layout.vue'
 import { useAuthStore } from '@/stores/auth'
 import dayjs from 'dayjs'
 

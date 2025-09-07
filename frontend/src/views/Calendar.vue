@@ -1,5 +1,4 @@
 <template>
-  <Layout>
     <div class="calendar-page">
       <!-- 页面标题 -->
       <div class="page-header">
@@ -170,7 +169,6 @@
         </div>
       </el-card>
     </div>
-  </Layout>
 </template>
 
 <script setup lang="ts">
@@ -178,7 +176,6 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
-import Layout from '@/components/Layout.vue'
 import type { BetRecord } from '@/types'
 
 const calendarRef = ref()
