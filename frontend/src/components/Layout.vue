@@ -19,6 +19,11 @@
           <template #title>仪表板</template>
         </el-menu-item>
         
+        <el-menu-item index="/recommend-records">
+          <el-icon><Document /></el-icon>
+          <template #title>推荐记录</template>
+        </el-menu-item>
+        
         <el-menu-item index="/records">
           <el-icon><Document /></el-icon>
           <template #title>投注记录</template>
@@ -116,6 +121,7 @@ const activeMenu = computed(() => route.path)
 const breadcrumbs = computed(() => {
   const routeMap: Record<string, string> = {
     '/dashboard': '仪表板',
+    '/recommend-records': '推荐记录',
     '/records': '投注记录',
     '/statistics': '数据统计',
     '/calendar': '日历视图',

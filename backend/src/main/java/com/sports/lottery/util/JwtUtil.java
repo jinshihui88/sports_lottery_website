@@ -75,7 +75,7 @@ public class JwtUtil {
      * 从Token中获取用户ID
      * 
      * @param token JWT Token
-     * @return 用户ID
+     * @return Long 用户ID
      */
     public Long getUserIdFromToken(String token) {
         Claims claims = getClaimsFromToken(token);
@@ -96,7 +96,7 @@ public class JwtUtil {
      * 从Token中获取声明
      * 
      * @param token JWT Token
-     * @return 声明
+     * @return Claims 声明
      */
     private Claims getClaimsFromToken(String token) {
         return Jwts.parserBuilder()

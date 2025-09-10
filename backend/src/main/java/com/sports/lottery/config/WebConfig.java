@@ -19,7 +19,7 @@ import java.util.Arrays;
  */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-    
+
     /**
      * 密码编码器
      */
@@ -27,17 +27,20 @@ public class WebConfig implements WebMvcConfigurer {
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    
+
     /**
-     * 跨域配置
+     * Spring Security 使用的跨域配置源
      */
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOriginPatterns("*")
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("*")
-                //.allowCredentials(true)
-                .maxAge(3600);
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOriginPattern("*");
+        configuration.addAllowedHeader("*");
+        configuration.addAllowedMethod("*");
+        configuration.setAllowCredentials(false);
+        configuration.setMaxAge(3600L);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

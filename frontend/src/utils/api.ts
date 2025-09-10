@@ -64,3 +64,18 @@ api.interceptors.response.use(
 )
 
 export default api
+
+// 登录接口
+export const loginApi = (data: { username: string; password: string }) => {
+  return api.post('/user/login', data)
+}
+
+// 推荐记录分页
+export const getRecommendPage = (params: { current: number; size: number }) => {
+  return api.get('/recommend/records', { params })
+}
+
+// 推荐记录保存/更新/删除
+export const createRecommend = (data: any) => api.post('/recommend/records', data)
+export const updateRecommend = (id: number, data: any) => api.put(`/recommend/records/${id}`, data)
+export const deleteRecommend = (id: number) => api.delete(`/recommend/records/${id}`)

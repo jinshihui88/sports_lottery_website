@@ -30,6 +30,12 @@ const routes: RouteRecordRaw[] = [
         meta: { requiresAuth: true }
       },
       {
+        path: 'recommend-records',
+        name: 'RecommendRecords',
+        component: () => import('@/views/RecommendRecords.vue'),
+        meta: { requiresAuth: true }
+      },
+      {
         path: 'records',
         name: 'Records',
         component: () => import('@/views/Records.vue'),

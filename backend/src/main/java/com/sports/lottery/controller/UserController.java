@@ -53,13 +53,15 @@ public class UserController {
     
     /**
      * 用户登录
+     * @param request
+     * @return Result<Map<String, Object>> 包含token和用户信息的结果
      */
     @PostMapping("/login")
     public Result<Map<String, Object>> login(@Validated @RequestBody LoginRequest request) {
         try {
+            log.info("用户登录请求：{}", request);
             String token = userService.login(request);
             User user = userService.getUserByUsername(request.getUsername());
-            
             Map<String, Object> data = new HashMap<>();
             data.put("token", token);
             data.put("userInfo", getUserInfo(user));

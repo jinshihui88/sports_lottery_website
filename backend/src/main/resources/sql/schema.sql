@@ -1,5 +1,22 @@
 -- 体彩投注记录管理系统数据库初始化脚本
 
+-- 推荐记录表
+CREATE TABLE IF NOT EXISTS recommend_record (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  user_id BIGINT NOT NULL,
+  recommend_date DATE NOT NULL,
+  match_desc VARCHAR(255) NOT NULL,
+  recommendation VARCHAR(100) NOT NULL,
+  recommender VARCHAR(100) NOT NULL,
+  result VARCHAR(10) NULL,
+  amount DECIMAL(10,2) NULL,
+  create_time DATETIME NOT NULL,
+  update_time DATETIME NOT NULL,
+  deleted TINYINT NOT NULL DEFAULT 0,
+  INDEX idx_recommend_user_date (user_id, recommend_date),
+  CONSTRAINT fk_recommend_user FOREIGN KEY (user_id) REFERENCES user(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- 创建数据库
 CREATE DATABASE IF NOT EXISTS sports_lottery DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

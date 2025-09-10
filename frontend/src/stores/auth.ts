@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { User } from '@/types'
+import { loginApi } from '@/utils/api'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
@@ -9,26 +10,24 @@ export const useAuthStore = defineStore('auth', () => {
 
   const login = async (username: string, password: string) => {
     try {
-      // 这里应该调用实际的登录API
-      // const response = await api.login({ username, password })
-      
-      // 模拟登录成功
-      const mockUser: User = {
-        id: 1,
-        username,
-        email: `${username}@example.com`,
-        avatar: '',
-        createdAt: new Date().toISOString()
+      // 调用后端登录接口
+      const res = await loginApi({ username, password })
+      // 期望后端返回结构：{ code: 200, data: { token, userInfo }, message }
+      if (res && res.code === 200 && res.data && res.data.token && res.data.userInfo) {
+        const backendUser: User = {
+          id: res.data.userInfo.id,
+          username: res.data.userInfo.username,
+          email: res.data.userInfo.email,
+          avatar: res.data.userInfo.avatar || '',
+          createdAt: res.data.userInfo.createTime
+        }
+        user.value = backendUser
+        token.value = res.data.token
+        localStorage.setItem('token', res.data.token)
+        localStorage.setItem('user', JSON.stringify(backendUser))
+        return { success: true, user: backendUser }
       }
-      
-      const mockToken = 'mock-jwt-token-' + Date.now()
-      
-      user.value = mockUser
-      token.value = mockToken
-      localStorage.setItem('token', mockToken)
-      localStorage.setItem('user', JSON.stringify(mockUser))
-      
-      return { success: true, user: mockUser }
+      return { success: false, error: (res && res.message) ? res.message : '登录失败' }
     } catch (error) {
       return { success: false, error: '登录失败' }
     }

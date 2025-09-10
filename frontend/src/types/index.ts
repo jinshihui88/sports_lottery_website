@@ -51,12 +51,12 @@ export interface ChartData {
   }[]
 }
 
-// API响应类型
+// API响应类型 - 匹配后端Result格式
 export interface ApiResponse<T = any> {
-  success: boolean
+  code: number
+  message: string
   data?: T
-  message?: string
-  error?: string
+  timestamp: number
 }
 
 // 分页参数

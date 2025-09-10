@@ -93,12 +93,12 @@
               </el-button>
             </el-form-item>
             
-            <div class="form-footer">
+            <!-- <div class="form-footer">
               <div class="register-link">
                 <span class="link-text">还没有账户？</span>
                 <router-link to="/register" class="link">立即注册</router-link>
               </div>
-            </div>
+            </div> -->
           </el-form>
         </div>
       </div>
