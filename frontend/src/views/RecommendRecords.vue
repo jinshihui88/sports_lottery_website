@@ -5,18 +5,20 @@
       <el-button type="primary" @click="openDialog">新增记录</el-button>
     </div>
 
-    <el-table :data="records" border stripe>
-      <el-table-column prop="recommendDate" label="日期" width="120" />
+    <el-table :data="records" border stripe style="width: 100%">
+      <el-table-column prop="recommendDate" label="日期" />
       <el-table-column prop="matchDesc" label="比赛" />
-      <el-table-column prop="recommendation" label="推荐结果" width="140" />
-      <el-table-column prop="recommender" label="推荐人" width="100" />
-      <el-table-column prop="result" label="结果" width="100">
+      <el-table-column prop="recommendation" label="推荐结果" />
+      <el-table-column prop="recommender" label="推荐人" />
+
+      <el-table-column prop="result" label="结果">
         <template #default="scope">
-          <el-tag :type="resultTag(scope.row.result)">{{ scope.row.result || '-' }}</el-tag>
+          <el-tag :type="resultTag(scope.row.result)">{{ resultText(scope.row.result) }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="amount" label="金额" width="120" />
-      <el-table-column label="操作" width="160">
+
+      <el-table-column prop="amount" label="金额" />
+      <el-table-column label="操作">
         <template #default="scope">
           <el-button size="small" @click="edit(scope.row)">编辑</el-button>
           <el-button size="small" type="danger" @click="remove(scope.row.id)">删除</el-button>
@@ -51,8 +53,8 @@
         </el-form-item>
         <el-form-item label="结果">
           <el-select v-model="form.result" placeholder="-">
-            <el-option label="成功" value="WIN" />
-            <el-option label="失败" value="LOSE" />
+            <el-option label="成功" value="1" />
+            <el-option label="失败" value="0" />
           </el-select>
         </el-form-item>
         <el-form-item label="金额">
@@ -98,10 +100,17 @@ const form = reactive<RecommendRecord>({
 })
 
 const resultTag = (r?: string | null) => {
-  if (r === 'WIN') return 'success'
-  if (r === 'LOSE') return 'danger'
+  if (r === '1') return 'success'
+  if (r === '0') return 'danger'
   return ''
 }
+
+const resultText = (r?: string | null) => {
+  if (r === '1') return '成功'
+  if (r === '0') return '失败'
+  return '-'
+}
+
 
 const fetchList = async (p = page.current) => {
   page.current = p
@@ -156,6 +165,8 @@ onMounted(() => fetchList(1))
   background: #fff;
   border-radius: 12px;
   padding: 20px;
+  width: 100%;
+  min-height: calc(100vh - 40px);
 }
 .page-header {
   display: flex;
