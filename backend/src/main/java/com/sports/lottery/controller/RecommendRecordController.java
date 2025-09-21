@@ -30,27 +30,32 @@ import java.time.LocalDateTime;
 public class RecommendRecordController {
 
     private final RecommendRecordService recommendRecordService;
+
     private final JwtUtil jwtUtil;
 
     /**
      * 分页查询当前登录用户的推荐记录
      * 
-     * @param current 当前页码（默认 1）
-     * @param size    每页条数（默认 10）
-     * @param request HTTP 请求（用于读取 Authorization 头部获取用户）
+     * @param current       当前页码（默认 1）
+     * @param size          每页条数（默认 10）
+     * @param recommendDate 推荐日期（可选，格式：yyyy-MM-dd）
+     * @param matchDesc     比赛信息（可选，模糊查询）
+     * @param request       HTTP 请求（用于读取 Authorization 头部获取用户）
      * @return Result<IPage<RecommendRecord>> 分页数据
      */
     @GetMapping("/records")
-    @Operation(summary = "分页查询推荐记录", description = "按当前登录用户分页返回推荐记录列表")
+    @Operation(summary = "分页查询推荐记录", description = "按当前登录用户分页返回推荐记录列表，支持按推荐日期和比赛信息筛选")
     public Result<IPage<RecommendRecord>> page(
             @Parameter(description = "当前页码", example = "1") @RequestParam(defaultValue = "1") Integer current,
             @Parameter(description = "每页条数", example = "10") @RequestParam(defaultValue = "10") Integer size,
+            @Parameter(description = "推荐日期") @RequestParam(required = false) String recommendDate,
+            @Parameter(description = "比赛信息") @RequestParam(required = false) String matchDesc,
             HttpServletRequest request) {
-        log.info("接收到分页查询推荐记录请求，current={}, size={}", current, size);
+        log.info("接收到分页查询推荐记录请求，current={}, size={}, recommendDate={}, matchDesc={}", current, size, recommendDate, matchDesc);
         Long userId = getUserId(request);
         if (userId == null)
             return Result.error("未登录");
-        return Result.success(recommendRecordService.pageByUser(userId, current, size));
+        return Result.success(recommendRecordService.pageByUserWithConditions(userId, current, size, recommendDate, matchDesc));
     }
 
     /**
@@ -127,7 +132,7 @@ public class RecommendRecordController {
         if (userId != null) {
             return (Long) userId;
         }
-        
+
         // 兜底方案：直接从Token解析（不推荐，因为已经有过滤器处理）
         try {
             String bearerToken = request.getHeader("Authorization");

@@ -2,10 +2,49 @@
   <div class="page-container">
     <div class="page-header">
       <h2>推荐记录</h2>
-      <el-button type="primary" @click="openDialog">新增记录</el-button>
     </div>
 
-    <el-table :data="records" border stripe style="width: 100%">
+    <!-- 查询表单 -->
+    <el-card class="search-card" shadow="never">
+      <el-form :model="searchForm" inline>
+        <el-form-item label="推荐日期">
+          <el-date-picker
+            v-model="searchForm.recommendDate"
+            type="date"
+            placeholder="请选择日期"
+            value-format="YYYY-MM-DD"
+            clearable
+            style="width: 200px"
+          />
+        </el-form-item>
+        <el-form-item label="比赛信息">
+          <el-input
+            v-model="searchForm.matchDesc"
+            placeholder="请输入比赛信息"
+            clearable
+            style="width: 200px"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleSearch" :loading="loading">
+            <el-icon><Search /></el-icon>
+            查询
+          </el-button>
+          <el-button @click="handleReset">
+            <el-icon><Refresh /></el-icon>
+            重置
+          </el-button>
+        </el-form-item>
+        <el-form-item class="add-button-item">
+          <el-button type="primary" @click="openDialog">
+            <el-icon><Plus /></el-icon>
+            新增记录
+          </el-button>
+        </el-form-item>
+      </el-form>
+    </el-card>
+
+    <el-table :data="records" border stripe style="width: 100%" v-loading="loading">
       <el-table-column prop="recommendDate" label="日期" />
       <el-table-column prop="matchDesc" label="比赛" />
       <el-table-column prop="recommendation" label="推荐结果" />
@@ -17,7 +56,6 @@
         </template>
       </el-table-column>
 
-      <el-table-column prop="amount" label="金额" />
       <el-table-column label="操作">
         <template #default="scope">
           <el-button size="small" @click="edit(scope.row)">编辑</el-button>
@@ -57,9 +95,6 @@
             <el-option label="失败" value="0" />
           </el-select>
         </el-form-item>
-        <el-form-item label="金额">
-          <el-input v-model.number="form.amount" type="number" />
-        </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
@@ -73,6 +108,7 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { Search, Refresh, Plus } from '@element-plus/icons-vue'
 import api from '@/utils/api'
 import type { ApiResponse } from '@/types'
 
@@ -86,8 +122,20 @@ interface RecommendRecord {
   amount?: number | null
 }
 
+interface SearchForm {
+  recommendDate?: string
+  matchDesc?: string
+}
+
 const page = reactive({ current: 1, size: 10, total: 0 })
 const records = ref<RecommendRecord[]>([])
+const loading = ref(false)
+
+// 查询表单
+const searchForm = reactive<SearchForm>({
+  recommendDate: '',
+  matchDesc: ''
+})
 
 const dialogVisible = ref(false)
 const form = reactive<RecommendRecord>({
@@ -114,11 +162,47 @@ const resultText = (r?: string | null) => {
 
 const fetchList = async (p = page.current) => {
   page.current = p
-  const res = await api.get('/recommend/records', { params: { current: page.current, size: page.size } }) as ApiResponse<{ records: RecommendRecord[], total: number }>
-  if (res && res.code === 200) {
-    records.value = res.data?.records || []
-    page.total = res.data?.total || 0
+  loading.value = true
+  
+  try {
+    // 构建查询参数
+    const params: any = { 
+      current: page.current, 
+      size: page.size 
+    }
+    
+    // 添加查询条件
+    if (searchForm.recommendDate) {
+      params.recommendDate = searchForm.recommendDate
+    }
+    if (searchForm.matchDesc) {
+      params.matchDesc = searchForm.matchDesc
+    }
+    
+    const res = await api.get('/recommend/records', { params }) as ApiResponse<{ records: RecommendRecord[], total: number }>
+    if (res && res.code === 200) {
+      records.value = res.data?.records || []
+      page.total = res.data?.total || 0
+    }
+  } catch (error) {
+    ElMessage.error('查询失败')
+  } finally {
+    loading.value = false
   }
+}
+
+// 查询方法
+const handleSearch = () => {
+  page.current = 1 // 重置到第一页
+  fetchList(1)
+}
+
+// 重置方法
+const handleReset = () => {
+  searchForm.recommendDate = ''
+  searchForm.matchDesc = ''
+  page.current = 1
+  fetchList(1)
 }
 
 const openDialog = () => {
@@ -164,16 +248,51 @@ onMounted(() => fetchList(1))
 .page-container {
   background: #fff;
   border-radius: 12px;
-  padding: 20px;
+  padding: 0;
   width: 100%;
   min-height: calc(100vh - 40px);
 }
+
 .page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
+  display: none;
 }
+
+.search-card {
+  margin: 0;
+  border: 1px solid #e4e7ed;
+  border-radius: 12px 12px 0 0;
+}
+
+.search-card :deep(.el-card__body) {
+  padding: 12px 20px;
+}
+
+.search-card :deep(.el-form-item) {
+  margin-bottom: 0;
+}
+
+.search-card :deep(.el-form-item:not(.add-button-item) .el-button) {
+  margin-left: 8px;
+}
+
+.search-card :deep(.el-form-item:not(.add-button-item) .el-button:first-child) {
+  margin-left: 0;
+}
+
+.add-button-item {
+  margin-left: auto !important;
+}
+
+.search-card :deep(.add-button-item) {
+  margin-left: auto !important;
+}
+
+.search-card :deep(.el-form) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .pagination {
   margin-top: 16px;
   display: flex;

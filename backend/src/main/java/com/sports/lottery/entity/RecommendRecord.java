@@ -46,9 +46,6 @@ public class RecommendRecord {
     @TableField("result")
     private String result;
 
-    @Schema(description = "金额（正负皆可）")
-    @TableField("amount")
-    private BigDecimal amount;
 
     @Schema(description = "创建时间")
     @TableField(value = "create_time", fill = FieldFill.INSERT)
