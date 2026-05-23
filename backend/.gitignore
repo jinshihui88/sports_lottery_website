@@ -1,6 +1,7 @@
 # Logs
 *.log
 *.iml
+target/
 
 backend/target
 
