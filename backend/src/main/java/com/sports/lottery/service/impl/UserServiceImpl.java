@@ -69,7 +69,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         
         // 验证密码
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("用户名或密码错误");
+            throw new RuntimeException("密码错误");
         }
         
         // 更新最后登录时间

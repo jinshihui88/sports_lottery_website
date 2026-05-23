@@ -34,17 +34,17 @@ public class User {
     @JsonIgnore
     private String password;
 
-    @Schema(description = "昵称")
-    @TableField("nickname")
-    private String nickname;
-
     @Schema(description = "邮箱")
     @TableField("email")
     private String email;
 
-    @Schema(description = "手机号")
+    @Schema(description = "昵称")
+    @TableField("nickname")
+    private String nickname;
+
+    /*@Schema(description = "手机号")
     @TableField("phone")
-    private String phone;
+    private String phone;*/
 
     @Schema(description = "头像")
     @TableField("avatar")
@@ -54,7 +54,7 @@ public class User {
     @TableField("status")
     private Integer status;
 
-    @Schema(description = "默认投注金额")
+    /*@Schema(description = "默认投注金额")
     @TableField("default_bet_amount")
     private Integer defaultBetAmount;
 
@@ -64,7 +64,7 @@ public class User {
 
     @Schema(description = "通知设置（JSON格式）")
     @TableField("notification_settings")
-    private String notificationSettings;
+    private String notificationSettings;*/
 
     @Schema(description = "创建时间")
     @TableField(value = "create_time", fill = FieldFill.INSERT)
@@ -79,9 +79,4 @@ public class User {
     @TableField(value = "last_login_time", fill = FieldFill.INSERT_UPDATE)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime lastLoginTime;
-
-    @Schema(description = "是否删除：0-未删除，1-已删除")
-    @TableField("deleted")
-    @TableLogic
-    private Integer deleted;
 }
