@@ -1,5 +1,6 @@
 package com.sports.lottery.controller;
 
+import com.alibaba.fastjson2.JSON;
 import com.sports.lottery.common.Result;
 import com.sports.lottery.dto.LoginRequest;
 import com.sports.lottery.dto.RegisterRequest;
@@ -59,7 +60,7 @@ public class UserController {
     @PostMapping("/login")
     public Result<Map<String, Object>> login(@Validated @RequestBody LoginRequest request) {
         try {
-            log.info("用户登录请求：{}", request);
+            log.info("用户登录请求：{}", JSON.toJSONString(request));
             String token = userService.login(request);
             User user = userService.getUserByUsername(request.getUsername());
             Map<String, Object> data = new HashMap<>();
