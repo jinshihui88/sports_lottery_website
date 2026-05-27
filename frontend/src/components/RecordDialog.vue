@@ -132,7 +132,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, watch, computed } from 'vue'
-import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
+import {type FormInstance, type FormRules } from 'element-plus'
 import type { BetRecord } from '@/types'
 
 interface Props {
@@ -183,7 +183,7 @@ const rules: FormRules = {
   result: [{ required: true, message: '请选择结果', trigger: 'change' }],
   actualWinning: [
     {
-      validator: (rule, value, callback) => {
+      validator: (_rule, value, callback) => {
         if (form.result === '中奖' && (!value || value <= 0)) {
           callback(new Error('中奖时请输入中奖金额'))
         } else {
