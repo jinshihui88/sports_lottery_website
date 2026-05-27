@@ -75,6 +75,9 @@ public class UserController {
     
     /**
      * 获取用户信息
+     *
+     * @param request
+     * @return Result<Map < String, Object>> 包含用户信息的结果
      */
     @GetMapping("/info")
     public Result<Map<String, Object>> getUserInfo(HttpServletRequest request) {
@@ -90,7 +93,6 @@ public class UserController {
             if (user == null) {
                 return Result.error("用户不存在");
             }
-            
             return Result.success(getUserInfo(user));
         } catch (Exception e) {
             return Result.error("获取用户信息失败");
@@ -99,6 +101,10 @@ public class UserController {
     
     /**
      * 更新用户信息
+     *
+     * @param userInfo
+     * @param request
+     * @return Result<String> 更新结果
      */
     @PutMapping("/info")
     public Result<String> updateUserInfo(@RequestBody User userInfo, HttpServletRequest request) {
@@ -124,6 +130,10 @@ public class UserController {
     
     /**
      * 修改密码
+     *
+     * @param passwordData
+     * @param request
+     * @return Result<String> 修改密码结果
      */
     @PutMapping("/password")
     public Result<String> changePassword(@RequestBody Map<String, String> passwordData, HttpServletRequest request) {
@@ -150,6 +160,9 @@ public class UserController {
     
     /**
      * 从请求中获取Token
+     *
+     * @param request
+     * @return String token 如果存在则返回，否则返回null
      */
     private String getTokenFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");

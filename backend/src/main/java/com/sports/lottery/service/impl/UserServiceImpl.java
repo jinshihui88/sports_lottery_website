@@ -108,7 +108,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 更新密码
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setUpdateTime(LocalDateTime.now());
-        
         return updateById(user);
     }
 }

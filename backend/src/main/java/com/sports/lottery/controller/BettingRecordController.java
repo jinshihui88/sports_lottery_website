@@ -34,6 +34,16 @@ public class BettingRecordController {
 
     /**
      * 分页查询投注记录
+     *
+     * @param current 当前页码
+     * @param size 每页数量
+     * @param league 联赛名称
+     * @param betType 投注类型
+     * @param result 结果
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @param request
+     * @return Result<IPage < BettingRecord>> 分页查询结果
      */
     @GetMapping("/records")
     public Result<IPage<BettingRecord>> getRecords(
@@ -72,10 +82,13 @@ public class BettingRecordController {
 
     /**
      * 添加投注记录
+     *
+     * @param request 投注记录请求参数
+     * @param httpRequest
+     * @return Result<String> 添加结果
      */
     @PostMapping("/records")
-    public Result<String> addRecord(@Validated @RequestBody BettingRecordRequest request,
-            HttpServletRequest httpRequest) {
+    public Result<String> addRecord(@Validated @RequestBody BettingRecordRequest request, HttpServletRequest httpRequest) {
         try {
             Long userId = getUserIdFromRequest(httpRequest);
             if (userId == null) {
