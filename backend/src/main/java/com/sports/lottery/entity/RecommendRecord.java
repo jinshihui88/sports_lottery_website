@@ -22,6 +22,9 @@ public class RecommendRecord {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
+    /**
+     * 用户ID
+     */
     @Schema(description = "用户ID")
     @TableField("user_id")
     private Long userId;
@@ -46,15 +49,23 @@ public class RecommendRecord {
     @TableField("result")
     private String result;
 
-
+    /**
+     * 创建时间
+     */
     @Schema(description = "创建时间")
     @TableField(value = "create_time", fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
+    /**
+     * 更新时间
+     */
     @Schema(description = "更新时间")
     @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 
+    /**
+     * 逻辑删除：0-未删除，1-已删除
+     */
     @Schema(description = "逻辑删除：0-未删除，1-已删除")
     @TableField("deleted")
     @TableLogic

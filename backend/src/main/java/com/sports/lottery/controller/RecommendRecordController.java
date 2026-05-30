@@ -60,21 +60,26 @@ public class RecommendRecordController {
 
     /**
      * 新增推荐记录
-     * 
-     * @param record  推荐记录实体（recommendDate/matchDesc/recommendation/recommender/result/amount）
+     *
+     * @param record  推荐记录实体
      * @param request HTTP 请求（用于读取 Authorization 头部获取用户）
      * @return Result<String> 操作结果
      */
     @PostMapping("/records")
     @Operation(summary = "新增推荐记录", description = "创建一条新的推荐记录")
     public Result<String> create(@RequestBody RecommendRecord record, HttpServletRequest request) {
-        Long userId = getUserId(request);
-        if (userId == null)
-            return Result.error("未登录");
-        record.setUserId(userId);
-        record.setCreateTime(LocalDateTime.now());
-        record.setUpdateTime(LocalDateTime.now());
-        return recommendRecordService.save(record) ? Result.success("创建成功") : Result.error("创建失败");
+        try {
+            Long userId = getUserId(request);
+            if (userId == null)
+                return Result.error("未登录");
+            record.setUserId(userId);
+            record.setCreateTime(LocalDateTime.now());
+            record.setUpdateTime(LocalDateTime.now());
+            return recommendRecordService.save(record) ? Result.success("创建成功") : Result.error("创建失败");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -111,13 +116,18 @@ public class RecommendRecordController {
     @DeleteMapping("/records/{id}")
     @Operation(summary = "删除推荐记录", description = "根据ID删除一条推荐记录")
     public Result<String> delete(@PathVariable Long id, HttpServletRequest request) {
-        Long userId = getUserId(request);
-        if (userId == null)
-            return Result.error("未登录");
-        RecommendRecord old = recommendRecordService.getById(id);
-        if (old == null || !old.getUserId().equals(userId))
-            return Result.error("无权限或记录不存在");
-        return recommendRecordService.removeById(id) ? Result.success("删除成功") : Result.error("删除失败");
+        try {
+            Long userId = getUserId(request);
+            if (userId == null)
+                return Result.error("未登录");
+            RecommendRecord old = recommendRecordService.getById(id);
+            if (old == null || !old.getUserId().equals(userId))
+                return Result.error("无权限或记录不存在");
+            return recommendRecordService.removeById(id) ? Result.success("删除成功") : Result.error("删除失败");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
     /**

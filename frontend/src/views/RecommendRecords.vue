@@ -93,6 +93,7 @@
           <el-select v-model="form.result" placeholder="-">
             <el-option label="成功" value="1" />
             <el-option label="失败" value="0" />
+            <el-option label="比赛中断" value="2" />
           </el-select>
         </el-form-item>
       </el-form>
@@ -156,6 +157,7 @@ const resultTag = (r?: string | null) => {
 const resultText = (r?: string | null) => {
   if (r === '1') return '成功'
   if (r === '0') return '失败'
+  if (r === '2') return '比赛中断'
   return '-'
 }
 
