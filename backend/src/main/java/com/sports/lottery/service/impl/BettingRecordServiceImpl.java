@@ -43,7 +43,20 @@ public class BettingRecordServiceImpl extends ServiceImpl<BettingRecordMapper, B
             wrapper.eq("user_id", query.getUserId());
         }
 
-        // 联赛条件
+        // 日期范围条件
+        if (query.getStartDate() != null) {
+            wrapper.ge("match_date", query.getStartDate());
+        }
+        if (query.getEndDate() != null) {
+            wrapper.le("match_date", query.getEndDate());
+        }
+
+        // 运动类型条件
+        if (StringUtils.hasText(query.getSportType())) {
+            wrapper.eq("sport_type", query.getSportType());
+        }
+
+        // 联赛名称
         if (StringUtils.hasText(query.getLeague())) {
             wrapper.like("league", query.getLeague());
         }
@@ -53,22 +66,12 @@ public class BettingRecordServiceImpl extends ServiceImpl<BettingRecordMapper, B
             wrapper.eq("bet_type", query.getBetType());
         }
 
-        // 结果条件
+        // 投注结果结果条件
         if (query.getResult() != null) {
             wrapper.eq("result", query.getResult());
         }
-
-        // 日期范围条件
-        if (query.getStartDate() != null) {
-            wrapper.ge("match_date", query.getStartDate());
-        }
-        if (query.getEndDate() != null) {
-            wrapper.le("match_date", query.getEndDate());
-        }
-
         // 按创建时间倒序
         wrapper.orderByDesc("create_time");
-
         return page(page, wrapper);
     }
 

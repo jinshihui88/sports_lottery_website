@@ -45,7 +45,7 @@ public class RecommendRecord {
     @TableField("recommender")
     private String recommender;
 
-    @Schema(description = "最终结果：WIN/LOSE/NULL")
+    @Schema(description = "最终结果（1：成功 0：失败 2：比赛中断）")
     @TableField("result")
     private String result;
 

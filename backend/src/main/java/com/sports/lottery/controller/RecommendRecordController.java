@@ -92,18 +92,22 @@ public class RecommendRecordController {
      */
     @PutMapping("/records/{id}")
     @Operation(summary = "更新推荐记录", description = "根据ID更新一条推荐记录")
-    public Result<String> update(@PathVariable Long id, @RequestBody RecommendRecord record,
-            HttpServletRequest request) {
-        Long userId = getUserId(request);
-        if (userId == null)
-            return Result.error("未登录");
-        RecommendRecord old = recommendRecordService.getById(id);
-        if (old == null || !old.getUserId().equals(userId))
-            return Result.error("无权限或记录不存在");
-        record.setId(id);
-        record.setUserId(userId);
-        record.setUpdateTime(LocalDateTime.now());
-        return recommendRecordService.updateById(record) ? Result.success("更新成功") : Result.error("更新失败");
+    public Result<String> update(@PathVariable Long id, @RequestBody RecommendRecord record, HttpServletRequest request) {
+        try {
+            Long userId = getUserId(request);
+            if (userId == null)
+                return Result.error("未登录");
+            RecommendRecord old = recommendRecordService.getById(id);
+            if (old == null || !old.getUserId().equals(userId))
+                return Result.error("无权限或记录不存在");
+            record.setId(id);
+            record.setUserId(userId);
+            record.setUpdateTime(LocalDateTime.now());
+            return recommendRecordService.updateById(record) ? Result.success("更新成功") : Result.error("更新失败");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
     /**

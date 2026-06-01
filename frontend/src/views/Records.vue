@@ -64,7 +64,7 @@
           </el-form-item>
           
           <el-form-item>
-            <el-button type="primary" @click="handleSearch">搜索</el-button>
+            <el-button type="primary" @click="handleSearch()">搜索</el-button>
             <el-button @click="resetSearch">重置</el-button>
           </el-form-item>
         </el-form>
@@ -178,18 +178,21 @@ const searchForm = reactive<SearchParams>({
   keyword: ''
 })
 
-const handleSearch = () => {
+const handleSearch = (page?: number) => {
   recordsStore.fetchRecords({
     ...searchForm,
-    page: 1,
+    page: typeof page === 'number' ? page : 1,
     pageSize: recordsStore.pagination.pageSize
   })
 }
 
 const resetSearch = () => {
-  Object.keys(searchForm).forEach(key => {
-    searchForm[key as keyof SearchParams] = key === 'dateRange' ? undefined : ''
-  })
+  searchForm.dateRange = undefined
+  searchForm.sportType = ''
+  searchForm.league = ''
+  searchForm.betType = ''
+  searchForm.result = ''
+  searchForm.keyword = ''
   handleSearch()
 }
 
@@ -204,7 +207,7 @@ const handleSizeChange = (size: number) => {
 
 const handleCurrentChange = (page: number) => {
   recordsStore.pagination.page = page
-  handleSearch()
+  handleSearch(page)
 }
 
 const editRecord = (record: BetRecord) => {

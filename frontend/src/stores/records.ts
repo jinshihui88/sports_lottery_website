@@ -1,6 +1,76 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import type { BetRecord, SearchParams, PaginationParams } from '@/types'
+import api from '@/utils/api'
+import type { ApiResponse, BetRecord, SearchParams, PaginationParams } from '@/types'
+
+interface BettingRecordApiItem {
+  id: number
+  userId: number
+  betDate?: string
+  date?: string
+  sportType?: string
+  league: string
+  homeTeam: string
+  awayTeam: string
+  betType: string
+  betOption?: string
+  betAmount: number
+  odds: number
+  result?: string | null
+  actualWinnings?: number
+  actualWinning?: number
+  profitLoss?: number
+  profit?: number
+  createTime?: string
+  createdAt?: string
+  updateTime?: string
+  updatedAt?: string
+}
+
+interface BettingRecordPage {
+  records: BettingRecordApiItem[]
+  total: number
+  current: number
+  size: number
+}
+
+const resultParamMap: Record<string, number> = {
+  待开奖: 0,
+  中奖: 1,
+  未中奖: 2
+}
+
+const resultTextMap: Record<string, BetRecord['result']> = {
+  WIN: '中奖',
+  LOSE: '未中奖',
+  DRAW: '待开奖'
+}
+
+const sportTextMap: Record<string, BetRecord['sportType']> = {
+  football: '足球',
+  basketball: '篮球',
+  足球: '足球',
+  篮球: '篮球'
+}
+
+const toBetRecord = (record: BettingRecordApiItem): BetRecord => ({
+  id: record.id,
+  userId: record.userId,
+  date: record.betDate || record.date || '',
+  sportType: sportTextMap[record.sportType || ''] || '足球',
+  league: record.league,
+  homeTeam: record.homeTeam,
+  awayTeam: record.awayTeam,
+  betType: record.betType as BetRecord['betType'],
+  betOption: record.betOption || '',
+  betAmount: Number(record.betAmount || 0),
+  odds: Number(record.odds || 0),
+  result: record.result ? (resultTextMap[record.result] || record.result as BetRecord['result']) : '待开奖',
+  actualWinning: Number(record.actualWinnings ?? record.actualWinning ?? 0),
+  profit: Number(record.profitLoss ?? record.profit ?? 0),
+  createdAt: record.createTime || record.createdAt || '',
+  updatedAt: record.updateTime || record.updatedAt || ''
+})
 
 export const useRecordsStore = defineStore('records', () => {
   const records = ref<BetRecord[]>([])
@@ -97,42 +167,36 @@ export const useRecordsStore = defineStore('records', () => {
   const fetchRecords = async (params?: SearchParams & PaginationParams) => {
     loading.value = true
     try {
-      // 模拟API调用
-      await new Promise(resolve => setTimeout(resolve, 500))
-      
-      let filteredRecords = [...mockRecords]
-      
-      // 应用筛选条件
-      if (params?.sportType) {
-        filteredRecords = filteredRecords.filter(r => r.sportType === params.sportType)
+      const queryParams: Record<string, string | number> = {
+        current: params?.page || pagination.value.page,
+        size: params?.pageSize || pagination.value.pageSize
       }
+
       if (params?.league) {
-        filteredRecords = filteredRecords.filter(r => r.league.includes(params.league))
+        queryParams.league = params.league
       }
       if (params?.betType) {
-        filteredRecords = filteredRecords.filter(r => r.betType === params.betType)
+        queryParams.betType = params.betType
       }
       if (params?.result) {
-        filteredRecords = filteredRecords.filter(r => r.result === params.result)
+        queryParams.result = resultParamMap[params.result]
       }
       if (params?.dateRange) {
         const [startDate, endDate] = params.dateRange
-        filteredRecords = filteredRecords.filter(r => 
-          r.date >= startDate && r.date <= endDate
-        )
+        queryParams.startDate = startDate
+        queryParams.endDate = endDate
       }
 
-      // 分页
-      const page = params?.page || 1
-      const pageSize = params?.pageSize || 10
-      const start = (page - 1) * pageSize
-      const end = start + pageSize
+      const res = await api.get('/betting/records', { params: queryParams }) as ApiResponse<BettingRecordPage>
+      if (res.code !== 200 || !res.data) {
+        return { success: false, error: res.message || '获取记录失败' }
+      }
 
-      records.value = filteredRecords.slice(start, end)
+      records.value = res.data.records.map(toBetRecord)
       pagination.value = {
-        page,
-        pageSize,
-        total: filteredRecords.length
+        page: Number(res.data.current || queryParams.current),
+        pageSize: Number(res.data.size || queryParams.size),
+        total: Number(res.data.total || 0)
       }
 
       return { success: true, data: records.value }
