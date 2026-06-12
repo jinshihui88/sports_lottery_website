@@ -108,16 +108,16 @@ public class BettingRecord {
     /**
      * 盈亏金额，单位为元。
      */
-    @Schema(description = "盈亏金额（元）")
+    /*@Schema(description = "盈亏金额（元）")
     @TableField("profit_loss")
-    private BigDecimal profitLoss;
+    private BigDecimal profitLoss;*/
 
     /**
      * 比赛结果。
      */
-    @Schema(description = "比赛结果")
+    /*@Schema(description = "比赛结果")
     @TableField("match_result")
-    private String matchResult;
+    private String matchResult;*/
 
     /**
      * 备注信息。

@@ -92,7 +92,7 @@ public class BettingRecordServiceImpl extends ServiceImpl<BettingRecordMapper, B
             record.setResult(convertResultToString(request.getResult()));
         }
         record.setActualWinnings(request.getActualWinnings());
-        record.setMatchResult(request.getMatchResult());
+        //record.setMatchResult(request.getMatchResult());
         record.setNotes(request.getNotes());
         record.setSportType(request.getSportType());
         record.setCreateTime(LocalDateTime.now());
@@ -119,7 +119,7 @@ public class BettingRecordServiceImpl extends ServiceImpl<BettingRecordMapper, B
                 record.setResult(convertResultToString(request.getResult()));
             }
             record.setActualWinnings(request.getActualWinnings());
-            record.setMatchResult(request.getMatchResult());
+            //record.setMatchResult(request.getMatchResult());
             record.setNotes(request.getNotes());
             record.setSportType(request.getSportType());
             record.setCreateTime(LocalDateTime.now());
@@ -150,7 +150,7 @@ public class BettingRecordServiceImpl extends ServiceImpl<BettingRecordMapper, B
             record.setResult(convertResultToString(request.getResult()));
         }
         record.setActualWinnings(request.getActualWinnings());
-        record.setMatchResult(request.getMatchResult());
+        //record.setMatchResult(request.getMatchResult());
         record.setNotes(request.getNotes());
         record.setSportType(request.getSportType());
         record.setUpdateTime(LocalDateTime.now());

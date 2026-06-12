@@ -76,6 +76,7 @@ public class BettingRecordController {
             IPage<BettingRecord> page = bettingRecordService.getRecordPage(query);
             return Result.success(page);
         } catch (Exception e) {
+            e.printStackTrace();
             return Result.error("查询失败：" + e.getMessage());
         }
     }
@@ -102,6 +103,7 @@ public class BettingRecordController {
                 return Result.error("添加失败");
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return Result.error("添加失败：" + e.getMessage());
         }
     }

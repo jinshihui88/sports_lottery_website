@@ -34,6 +34,22 @@ interface BettingRecordPage {
   size: number
 }
 
+type BetRecordForm = Omit<BetRecord, 'id' | 'userId' | 'createdAt' | 'updatedAt'>
+
+interface BettingRecordRequest {
+  betDate: string
+  league: string
+  homeTeam: string
+  awayTeam: string
+  betType: string
+  betOption: string
+  betAmount: number
+  odds: number
+  result: number
+  actualWinnings?: number
+  sportType: string
+}
+
 const resultParamMap: Record<string, number> = {
   待开奖: 0,
   中奖: 1,
@@ -52,6 +68,25 @@ const sportTextMap: Record<string, BetRecord['sportType']> = {
   足球: '足球',
   篮球: '篮球'
 }
+
+const sportParamMap: Record<BetRecord['sportType'], string> = {
+  足球: 'football',
+  篮球: 'basketball'
+}
+
+const toBettingRecordRequest = (record: BetRecordForm): BettingRecordRequest => ({
+  betDate: record.date,
+  league: record.league,
+  homeTeam: record.homeTeam,
+  awayTeam: record.awayTeam,
+  betType: record.betType,
+  betOption: record.betOption,
+  betAmount: record.betAmount,
+  odds: record.odds,
+  result: resultParamMap[record.result],
+  actualWinnings: record.result === '中奖' ? record.actualWinning || 0 : undefined,
+  sportType: sportParamMap[record.sportType]
+})
 
 const toBetRecord = (record: BettingRecordApiItem): BetRecord => ({
   id: record.id,
@@ -208,21 +243,19 @@ export const useRecordsStore = defineStore('records', () => {
   }
 
   // 添加记录
-  const addRecord = async (record: Omit<BetRecord, 'id' | 'userId' | 'createdAt' | 'updatedAt'>) => {
+  const addRecord = async (record: BetRecordForm) => {
     try {
-      const newRecord: BetRecord = {
-        ...record,
-        id: Date.now(),
-        userId: 1,
-        profit: record.result === '中奖' ? (record.actualWinning || 0) - record.betAmount : -record.betAmount,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+      const res = await api.post('/betting/records', toBettingRecordRequest(record)) as ApiResponse<string>
+      if (res.code !== 200) {
+        return { success: false, error: res.message || '添加记录失败' }
       }
 
-      mockRecords.unshift(newRecord)
-      await fetchRecords() // 刷新列表
+      await fetchRecords({
+        page: 1,
+        pageSize: pagination.value.pageSize
+      })
 
-      return { success: true, data: newRecord }
+      return { success: true, data: res.data }
     } catch (error) {
       return { success: false, error: '添加记录失败' }
     }
