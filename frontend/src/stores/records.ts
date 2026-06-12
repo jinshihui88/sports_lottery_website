@@ -262,26 +262,19 @@ export const useRecordsStore = defineStore('records', () => {
   }
 
   // 更新记录
-  const updateRecord = async (id: number, updates: Partial<BetRecord>) => {
+  const updateRecord = async (id: number, updates: BetRecordForm) => {
     try {
-      const index = mockRecords.findIndex(r => r.id === id)
-      if (index === -1) {
-        return { success: false, error: '记录不存在' }
+      const res = await api.put(`/betting/records/${id}`, toBettingRecordRequest(updates)) as ApiResponse<string>
+      if (res.code !== 200) {
+        return { success: false, error: res.message || '更新记录失败' }
       }
 
-      const updatedRecord = {
-        ...mockRecords[index],
-        ...updates,
-        profit: updates.result === '中奖' 
-          ? (updates.actualWinning || 0) - (updates.betAmount || mockRecords[index].betAmount)
-          : -(updates.betAmount || mockRecords[index].betAmount),
-        updatedAt: new Date().toISOString()
-      }
+      await fetchRecords({
+        page: pagination.value.page,
+        pageSize: pagination.value.pageSize
+      })
 
-      mockRecords[index] = updatedRecord
-      await fetchRecords() // 刷新列表
-
-      return { success: true, data: updatedRecord }
+      return { success: true, data: res.data }
     } catch (error) {
       return { success: false, error: '更新记录失败' }
     }
@@ -290,15 +283,17 @@ export const useRecordsStore = defineStore('records', () => {
   // 删除记录
   const deleteRecord = async (id: number) => {
     try {
-      const index = mockRecords.findIndex(r => r.id === id)
-      if (index === -1) {
-        return { success: false, error: '记录不存在' }
+      const res = await api.delete(`/betting/records/${id}`) as ApiResponse<string>
+      if (res.code !== 200) {
+        return { success: false, error: res.message || '删除记录失败' }
       }
 
-      mockRecords.splice(index, 1)
-      await fetchRecords() // 刷新列表
+      await fetchRecords({
+        page: pagination.value.page,
+        pageSize: pagination.value.pageSize
+      })
 
-      return { success: true }
+      return { success: true, data: res.data }
     } catch (error) {
       return { success: false, error: '删除记录失败' }
     }

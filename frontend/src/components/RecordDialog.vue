@@ -64,7 +64,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="投注选项" prop="betOption">
+          <el-form-item label="投注内容" prop="betOption">
             <el-input v-model="form.betOption" placeholder="如：主胜、大球等" />
           </el-form-item>
         </el-col>
@@ -97,9 +97,8 @@
 
       <el-row :gutter="20">
         <el-col :span="12">
-          <el-form-item label="结果" prop="result">
+          <el-form-item label="结果" prop="result"> 
             <el-select v-model="form.result" placeholder="请选择" style="width: 100%" @change="handleResultChange">
-              <el-option label="待开奖" value="待开奖" />
               <el-option label="中奖" value="中奖" />
               <el-option label="未中奖" value="未中奖" />
             </el-select>
@@ -166,7 +165,7 @@ const form = reactive({
   betOption: '',
   betAmount: 0,
   odds: 0,
-  result: '待开奖',
+  result: '',
   actualWinning: 0
 })
 
@@ -212,7 +211,7 @@ const resetForm = () => {
     betOption: '',
     betAmount: 0,
     odds: 0,
-    result: '待开奖',
+    result: '',
     actualWinning: 0
   })
 }
