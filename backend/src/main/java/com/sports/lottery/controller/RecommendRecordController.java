@@ -2,6 +2,7 @@ package com.sports.lottery.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.sports.lottery.common.Result;
+import com.sports.lottery.dto.RecommendRecordQuery;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -10,10 +11,12 @@ import com.sports.lottery.service.RecommendRecordService;
 import com.sports.lottery.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 推荐记录控制器
@@ -38,8 +41,7 @@ public class RecommendRecordController {
      * 
      * @param current       当前页码（默认 1）
      * @param size          每页条数（默认 10）
-     * @param recommendDate 推荐日期（可选，格式：yyyy-MM-dd）
-     * @param matchDesc     比赛信息（可选，模糊查询）
+     * @param query         查询条件
      * @param request       HTTP 请求（用于读取 Authorization 头部获取用户）
      * @return Result<IPage<RecommendRecord>> 分页数据
      */
@@ -48,14 +50,35 @@ public class RecommendRecordController {
     public Result<IPage<RecommendRecord>> page(
             @Parameter(description = "当前页码", example = "1") @RequestParam(defaultValue = "1") Integer current,
             @Parameter(description = "每页条数", example = "10") @RequestParam(defaultValue = "10") Integer size,
-            @Parameter(description = "推荐日期") @RequestParam(required = false) String recommendDate,
-            @Parameter(description = "比赛信息") @RequestParam(required = false) String matchDesc,
-            HttpServletRequest request) {
-        log.info("接收到分页查询推荐记录请求，current={}, size={}, recommendDate={}, matchDesc={}", current, size, recommendDate, matchDesc);
-        Long userId = getUserId(request);
-        if (userId == null)
-            return Result.error("未登录");
-        return Result.success(recommendRecordService.pageByUserWithConditions(userId, current, size, recommendDate, matchDesc));
+            @ParameterObject RecommendRecordQuery query, HttpServletRequest request) {
+        try {
+            String recommendDate = query.getRecommendDate();
+            String matchDesc = query.getMatchDesc();
+            log.info("接收到分页查询推荐记录请求，current={}, size={}, recommendDate={}, matchDesc={}", current, size, recommendDate, matchDesc);
+            Long userId = getUserId(request);
+            if (userId == null)
+                return Result.error("未登录");
+            return Result.success(recommendRecordService.pageByUserWithConditions(userId, current, size, query));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 查询推荐人列表
+     *
+     * @return Result<List < String>> 推荐人列表
+     */
+    @GetMapping("/recommenders")
+    @Operation(summary = "查询推荐人列表", description = "查询未删除推荐记录中的去重推荐人列表")
+    public Result<List<String>> listRecommenders() {
+        try {
+            return Result.success(recommendRecordService.listRecommenders());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
     /**

@@ -3,78 +3,84 @@
       <!-- 页面标题和操作按钮 -->
       <div class="page-header">
         <h2>投注记录管理</h2>
-        <div class="header-actions">
-          <el-button type="primary" @click="showAddDialog = true">
-            <el-icon><Plus /></el-icon>
-            添加记录
-          </el-button>
-          <el-button @click="showBatchDialog = true">
-            <el-icon><Upload /></el-icon>
-            批量添加
-          </el-button>
-          <el-button @click="exportRecords">
-            <el-icon><Download /></el-icon>
-            导出数据
-          </el-button>
-        </div>
       </div>
 
       <!-- 搜索筛选区域 -->
-      <el-card class="search-card">
-        <el-form :model="searchForm" inline>
-          <el-form-item label="日期范围">
-            <el-date-picker
-              v-model="searchForm.dateRange"
-              type="daterange"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              format="YYYY-MM-DD"
-              value-format="YYYY-MM-DD"
-            />
-          </el-form-item>
-          
-          <el-form-item label="运动类型">
-            <el-select v-model="searchForm.sportType" placeholder="请选择" clearable>
-              <el-option label="足球" value="足球" />
-              <el-option label="篮球" value="篮球" />
-            </el-select>
-          </el-form-item>
-          
-          <el-form-item label="联赛">
-            <el-input v-model="searchForm.league" placeholder="请输入联赛名称" clearable />
-          </el-form-item>
-          
-          <el-form-item label="投注类型">
-            <el-select v-model="searchForm.betType" placeholder="请选择" clearable>
-              <el-option label="胜平负" value="胜平负" />
-              <el-option label="让球" value="让球" />
-              <el-option label="大小球" value="大小球" />
-              <el-option label="比分" value="比分" />
-              <el-option label="总进球" value="总进球" />
-            </el-select>
-          </el-form-item>
-          
-          <el-form-item label="结果">
-            <el-select v-model="searchForm.result" placeholder="请选择" clearable>
-              <el-option label="待开奖" value="待开奖" />
-              <el-option label="中奖" value="中奖" />
-              <el-option label="未中奖" value="未中奖" />
-            </el-select>
-          </el-form-item>
-          
-          <el-form-item>
-            <el-button type="primary" @click="handleSearch()">搜索</el-button>
-            <el-button @click="resetSearch">重置</el-button>
-          </el-form-item>
-        </el-form>
+      <el-card class="search-card" shadow="never">
+        <div class="toolbar-content">
+          <el-form :model="searchForm" inline class="search-form">
+            <el-form-item label="日期范围">
+              <el-date-picker
+                v-model="searchForm.dateRange"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                format="YYYY-MM-DD"
+                value-format="YYYY-MM-DD"
+              />
+            </el-form-item>
+            
+            <el-form-item label="运动类型">
+              <el-select v-model="searchForm.sportType" placeholder="请选择" clearable>
+                <el-option label="足球" value="足球" />
+                <el-option label="篮球" value="篮球" />
+              </el-select>
+            </el-form-item>
+            
+            <el-form-item label="联赛">
+              <el-input v-model="searchForm.league" placeholder="请输入联赛名称" clearable />
+            </el-form-item>
+            
+            <el-form-item label="投注类型">
+              <el-select v-model="searchForm.betType" placeholder="请选择" clearable>
+                <el-option label="胜平负" value="胜平负" />
+                <el-option label="让球" value="让球" />
+                <el-option label="大小球" value="大小球" />
+                <el-option label="比分" value="比分" />
+                <el-option label="总进球" value="总进球" />
+              </el-select>
+            </el-form-item>
+            
+            <el-form-item label="结果">
+              <el-select v-model="searchForm.result" placeholder="请选择" clearable>
+                <el-option label="待开奖" value="待开奖" />
+                <el-option label="中奖" value="中奖" />
+                <el-option label="未中奖" value="未中奖" />
+              </el-select>
+            </el-form-item>
+            
+            <el-form-item>
+              <el-button type="primary" @click="handleSearch()">搜索</el-button>
+              <el-button @click="resetSearch">重置</el-button>
+            </el-form-item>
+          </el-form>
+
+          <div class="header-actions">
+            <el-button type="primary" @click="showAddDialog = true">
+              <el-icon><Plus /></el-icon>
+              添加记录
+            </el-button>
+            <el-button @click="showBatchDialog = true">
+              <el-icon><Upload /></el-icon>
+              批量添加
+            </el-button>
+            <el-button @click="exportRecords">
+              <el-icon><Download /></el-icon>
+              导出数据
+            </el-button>
+          </div>
+        </div>
       </el-card>
 
       <!-- 数据表格 -->
-      <el-card class="table-card">
+      <div class="table-wrapper">
         <el-table
           :data="recordsStore.records"
           :loading="recordsStore.loading"
+          border
+          stripe
+          height="100%"
           style="width: 100%"
           @selection-change="handleSelectionChange"
         >
@@ -123,20 +129,19 @@
             </template>
           </el-table-column>
         </el-table>
+      </div>
 
-        <!-- 分页 -->
-        <div class="pagination-wrapper">
-          <el-pagination
-            v-model:current-page="recordsStore.pagination.page"
-            v-model:page-size="recordsStore.pagination.pageSize"
-            :page-sizes="[10, 20, 50, 100]"
-            :total="recordsStore.pagination.total"
-            layout="total, sizes, prev, pager, next, jumper"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-          />
-        </div>
-      </el-card>
+      <!-- 分页 -->
+      <div class="pagination-wrapper">
+        <el-pagination
+          background
+          :current-page="recordsStore.pagination.page"
+          :page-size="recordsStore.pagination.pageSize"
+          :total="recordsStore.pagination.total"
+          layout="prev, pager, next"
+          @current-change="handleCurrentChange"
+        />
+      </div>
 
       <!-- 添加/编辑记录对话框 -->
       <RecordDialog
@@ -281,15 +286,18 @@ onMounted(() => {
 
 <style scoped>
 .records-page {
-  max-width: 1400px;
-  margin: 0 auto;
+  background: #fff;
+  border-radius: 12px;
+  padding: 0;
+  width: 100%;
+  height: calc(100vh - 100px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+  display: none;
 }
 
 .page-header h2 {
@@ -299,21 +307,80 @@ onMounted(() => {
 
 .header-actions {
   display: flex;
+  flex: 0 0 auto;
   gap: 12px;
+  margin-left: auto;
+  white-space: nowrap;
 }
 
 .search-card {
-  margin-bottom: 20px;
+  flex: 0 0 auto;
+  margin: 0;
+  border: 1px solid #e4e7ed;
+  border-radius: 12px 12px 0 0;
 }
 
-.table-card {
-  margin-bottom: 20px;
+.search-card :deep(.el-card__body) {
+  padding: 12px 20px;
+}
+
+.toolbar-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.search-form {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  min-width: 0;
+}
+
+.search-card :deep(.el-form-item) {
+  margin: 0;
+}
+
+.search-card :deep(.el-date-editor.el-input__wrapper) {
+  width: 300px;
+}
+
+.search-card :deep(.el-select) {
+  width: 120px;
+}
+
+.search-card :deep(.el-input) {
+  width: 200px;
+}
+
+.search-card :deep(.el-button + .el-button) {
+  margin-left: 8px;
+}
+
+.table-wrapper {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.table-wrapper :deep(.el-table) {
+  border-top: none;
+}
+
+.table-wrapper :deep(.el-table__header-wrapper th.el-table__cell) {
+  background-color: #fff;
+  color: #606266;
+  font-weight: 600;
 }
 
 .pagination-wrapper {
+  flex: 0 0 64px;
   display: flex;
+  align-items: center;
   justify-content: center;
-  margin-top: 20px;
+  border-top: 1px solid #ebeef5;
 }
 
 .text-red-500 {

@@ -25,6 +25,23 @@
             style="width: 200px"
           />
         </el-form-item>
+        <el-form-item label="推荐人">
+          <el-select
+            v-model="searchForm.recommender"
+            placeholder="请选择推荐人"
+            clearable
+            filterable
+            :loading="recommenderLoading"
+            style="width: 200px"
+          >
+            <el-option
+              v-for="(recommender, index) in recommenderOptions"
+              :key="`${recommender}-${index}`"
+              :label="recommender"
+              :value="recommender"
+            />
+          </el-select>
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch" :loading="loading">
             <el-icon><Search /></el-icon>
@@ -44,25 +61,35 @@
       </el-form>
     </el-card>
 
-    <el-table :data="records" border stripe style="width: 100%" v-loading="loading">
-      <el-table-column prop="recommendDate" label="日期" />
-      <el-table-column prop="matchDesc" label="比赛" />
-      <el-table-column prop="recommendation" label="推荐结果" />
-      <el-table-column prop="recommender" label="推荐人" />
+    <div class="table-wrapper">
+      <el-table
+        :data="records"
+        border
+        stripe
+        height="100%"
+        style="width: 100%"
+        v-loading="loading"
+        :row-class-name="tableRowClassName"
+      >
+        <el-table-column prop="recommendDate" label="日期" />
+        <el-table-column prop="matchDesc" label="比赛" />
+        <el-table-column prop="recommendation" label="推荐结果" />
+        <el-table-column prop="recommender" label="推荐人" />
 
-      <el-table-column prop="result" label="结果">
-        <template #default="scope">
-          <el-tag :type="resultTag(scope.row.result)">{{ resultText(scope.row.result) }}</el-tag>
-        </template>
-      </el-table-column>
+        <el-table-column prop="result" label="结果">
+          <template #default="scope">
+            <el-tag :type="resultTag(scope.row.result)">{{ resultText(scope.row.result) }}</el-tag>
+          </template>
+        </el-table-column>
 
-      <el-table-column label="操作">
-        <template #default="scope">
-          <el-button size="small" @click="edit(scope.row)">编辑</el-button>
-          <el-button size="small" type="danger" @click="remove(scope.row.id)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+        <el-table-column label="操作">
+          <template #default="scope">
+            <el-button size="small" @click="edit(scope.row)">编辑</el-button>
+            <el-button size="small" type="danger" @click="remove(scope.row.id)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
 
     <div class="pagination">
       <el-pagination
@@ -126,16 +153,20 @@ interface RecommendRecord {
 interface SearchForm {
   recommendDate?: string
   matchDesc?: string
+  recommender?: string
 }
 
-const page = reactive({ current: 1, size: 10, total: 0 })
+const page = reactive({ current: 1, size: 15, total: 0 })
 const records = ref<RecommendRecord[]>([])
 const loading = ref(false)
+const recommenderOptions = ref<string[]>([])
+const recommenderLoading = ref(false)
 
 // 查询表单
 const searchForm = reactive<SearchForm>({
   recommendDate: '',
-  matchDesc: ''
+  matchDesc: '',
+  recommender: ''
 })
 
 const dialogVisible = ref(false)
@@ -148,19 +179,43 @@ const form = reactive<RecommendRecord>({
   amount: undefined
 })
 
+const isSuccessResult = (r?: string | null) => r === '1' || r === '成功'
+
+const isFailedResult = (r?: string | null) => r === '0' || r === '失败'
+
 const resultTag = (r?: string | null) => {
-  if (r === '1') return 'success'
-  if (r === '0') return 'danger'
+  if (isSuccessResult(r)) return 'success'
+  if (isFailedResult(r)) return 'danger'
   return ''
 }
 
 const resultText = (r?: string | null) => {
-  if (r === '1') return '成功'
-  if (r === '0') return '失败'
+  if (isSuccessResult(r)) return '成功'
+  if (isFailedResult(r)) return '失败'
   if (r === '2') return '比赛中断'
   return '-'
 }
 
+const tableRowClassName = ({ row }: { row: RecommendRecord }) => {
+  if (isSuccessResult(row.result)) return 'recommend-success-row'
+  if (isFailedResult(row.result)) return 'recommend-failed-row'
+  return ''
+}
+
+const fetchRecommenders = async () => {
+  recommenderLoading.value = true
+
+  try {
+    const res = await api.get('/recommend/recommenders') as ApiResponse<string[]>
+    if (res && res.code === 200) {
+      recommenderOptions.value = res.data || []
+    }
+  } catch (error) {
+    ElMessage.error('推荐人列表加载失败')
+  } finally {
+    recommenderLoading.value = false
+  }
+}
 
 const fetchList = async (p = page.current) => {
   page.current = p
@@ -179,6 +234,9 @@ const fetchList = async (p = page.current) => {
     }
     if (searchForm.matchDesc) {
       params.matchDesc = searchForm.matchDesc
+    }
+    if (searchForm.recommender) {
+      params.recommender = searchForm.recommender
     }
     
     const res = await api.get('/recommend/records', { params }) as ApiResponse<{ records: RecommendRecord[], total: number }>
@@ -203,6 +261,7 @@ const handleSearch = () => {
 const handleReset = () => {
   searchForm.recommendDate = ''
   searchForm.matchDesc = ''
+  searchForm.recommender = ''
   page.current = 1
   fetchList(1)
 }
@@ -243,7 +302,10 @@ const remove = async (id?: number) => {
   }
 }
 
-onMounted(() => fetchList(1))
+onMounted(() => {
+  fetchRecommenders()
+  fetchList(1)
+})
 </script>
 
 <style scoped>
@@ -252,7 +314,10 @@ onMounted(() => fetchList(1))
   border-radius: 12px;
   padding: 0;
   width: 100%;
-  min-height: calc(100vh - 40px);
+  height: calc(100vh - 100px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .page-header {
@@ -260,6 +325,7 @@ onMounted(() => fetchList(1))
 }
 
 .search-card {
+  flex: 0 0 auto;
   margin: 0;
   border: 1px solid #e4e7ed;
   border-radius: 12px 12px 0 0;
@@ -295,10 +361,34 @@ onMounted(() => fetchList(1))
   justify-content: space-between;
 }
 
+.table-wrapper {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.table-wrapper :deep(.el-table__body tr.recommend-success-row > td.el-table__cell) {
+  background-color: #8fd16a;
+}
+
+.table-wrapper :deep(.el-table__body tr.recommend-success-row:hover > td.el-table__cell) {
+  background-color: #7bc457;
+}
+
+.table-wrapper :deep(.el-table__body tr.recommend-failed-row > td.el-table__cell) {
+  background-color: #f56c6c;
+}
+
+.table-wrapper :deep(.el-table__body tr.recommend-failed-row:hover > td.el-table__cell) {
+  background-color: #e85b5b;
+}
+
 .pagination {
-  margin-top: 16px;
+  flex: 0 0 64px;
   display: flex;
+  align-items: center;
   justify-content: center;
+  border-top: 1px solid #ebeef5;
 }
 </style>
 
