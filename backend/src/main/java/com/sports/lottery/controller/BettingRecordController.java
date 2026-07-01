@@ -310,6 +310,9 @@ public class BettingRecordController {
 
     /**
      * 从请求中获取用户ID
+     *
+     @param request
+     @return Long 用户ID
      */
     private Long getUserIdFromRequest(HttpServletRequest request) {
         try {

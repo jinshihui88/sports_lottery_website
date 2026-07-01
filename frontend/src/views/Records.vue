@@ -7,59 +7,64 @@
 
       <!-- 搜索筛选区域 -->
       <el-card class="search-card" shadow="never">
-        <div class="toolbar-content">
-          <el-form :model="searchForm" inline class="search-form">
-            <el-form-item label="日期范围">
-              <el-date-picker
-                v-model="searchForm.dateRange"
-                type="daterange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                format="YYYY-MM-DD"
-                value-format="YYYY-MM-DD"
-              />
-            </el-form-item>
-            
-            <el-form-item label="运动类型">
-              <el-select v-model="searchForm.sportType" placeholder="请选择" clearable>
-                <el-option label="足球" value="足球" />
-                <el-option label="篮球" value="篮球" />
-              </el-select>
-            </el-form-item>
-            
-            <el-form-item label="联赛">
-              <el-input v-model="searchForm.league" placeholder="请输入联赛名称" clearable />
-            </el-form-item>
-            
-            <el-form-item label="投注类型">
-              <el-select v-model="searchForm.betType" placeholder="请选择" clearable>
-                <el-option label="胜平负" value="胜平负" />
-                <el-option label="让球" value="让球" />
-                <el-option label="大小球" value="大小球" />
-                <el-option label="比分" value="比分" />
-                <el-option label="总进球" value="总进球" />
-              </el-select>
-            </el-form-item>
-            
-            <el-form-item label="结果">
-              <el-select v-model="searchForm.result" placeholder="请选择" clearable>
-                <el-option label="待开奖" value="待开奖" />
-                <el-option label="中奖" value="中奖" />
-                <el-option label="未中奖" value="未中奖" />
-              </el-select>
-            </el-form-item>
-            
-            <el-form-item>
-              <el-button type="primary" @click="handleSearch()">搜索</el-button>
-              <el-button @click="resetSearch">重置</el-button>
-            </el-form-item>
-          </el-form>
+        <el-form :model="searchForm" inline class="search-form">
+          <el-form-item label="日期范围">
+            <el-date-picker
+              v-model="searchForm.dateRange"
+              type="daterange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              format="YYYY-MM-DD"
+              value-format="YYYY-MM-DD"
+              clearable
+            />
+          </el-form-item>
 
-          <div class="header-actions">
+          <el-form-item label="运动类型">
+            <el-select v-model="searchForm.sportType" placeholder="请选择" clearable>
+              <el-option label="足球" value="足球" />
+              <el-option label="篮球" value="篮球" />
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="联赛">
+            <el-input v-model="searchForm.league" placeholder="请输入联赛名称" clearable />
+          </el-form-item>
+
+          <el-form-item label="投注类型">
+            <el-select v-model="searchForm.betType" placeholder="请选择" clearable>
+              <el-option label="胜平负" value="胜平负" />
+              <el-option label="让球" value="让球" />
+              <el-option label="大小球" value="大小球" />
+              <el-option label="比分" value="比分" />
+              <el-option label="总进球" value="总进球" />
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="结果">
+            <el-select v-model="searchForm.result" placeholder="请选择" clearable>
+              <el-option label="待开奖" value="待开奖" />
+              <el-option label="中奖" value="中奖" />
+              <el-option label="未中奖" value="未中奖" />
+            </el-select>
+          </el-form-item>
+
+          <el-form-item>
+            <el-button type="primary" @click="handleSearch()">
+              <el-icon><Search /></el-icon>
+              查询
+            </el-button>
+            <el-button @click="resetSearch">
+              <el-icon><Refresh /></el-icon>
+              重置
+            </el-button>
+          </el-form-item>
+
+          <el-form-item class="add-button-item">
             <el-button type="primary" @click="showAddDialog = true">
               <el-icon><Plus /></el-icon>
-              添加记录
+              新增记录
             </el-button>
             <el-button @click="showBatchDialog = true">
               <el-icon><Upload /></el-icon>
@@ -69,8 +74,8 @@
               <el-icon><Download /></el-icon>
               导出数据
             </el-button>
-          </div>
-        </div>
+          </el-form-item>
+        </el-form>
       </el-card>
 
       <!-- 数据表格 -->
@@ -82,20 +87,21 @@
           stripe
           height="100%"
           style="width: 100%"
+          :row-class-name="tableRowClassName"
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="55" />
-          <el-table-column prop="date" label="日期" width="120" sortable />
+          <el-table-column prop="date" label="日期" min-width="120" sortable />
           <el-table-column prop="sportType" label="运动类型" width="100" />
-          <el-table-column prop="league" label="联赛" width="120" />
-          <el-table-column label="对阵" width="200">
+          <el-table-column prop="league" label="联赛" min-width="140" />
+          <el-table-column label="对阵" min-width="220">
             <template #default="{ row }">
               {{ row.homeTeam }} vs {{ row.awayTeam }}
             </template>
           </el-table-column>
-          <el-table-column prop="betType" label="投注类型" width="100" />
-          <el-table-column prop="betOption" label="投注选项" width="120" />
-          <el-table-column prop="betAmount" label="投注金额" width="100" sortable>
+          <el-table-column prop="betType" label="投注类型" min-width="110" />
+          <el-table-column prop="betOption" label="投注选项" min-width="120" />
+          <el-table-column prop="betAmount" label="投注金额" min-width="110" sortable>
             <template #default="{ row }">
               ¥{{ row.betAmount }}
             </template>
@@ -115,7 +121,7 @@
               ¥{{ row.actualWinning || 0 }}
             </template>
           </el-table-column>
-          <el-table-column prop="profit" label="盈亏" width="100" sortable>
+          <el-table-column prop="profit" label="盈亏" min-width="100" sortable>
             <template #default="{ row }">
               <span :class="{ 'text-red-500': row.profit < 0, 'text-green-500': row.profit > 0 }">
                 ¥{{ row.profit }}
@@ -161,7 +167,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Upload, Download } from '@element-plus/icons-vue'
+import { Download, Plus, Refresh, Search, Upload } from '@element-plus/icons-vue'
 import RecordDialog from '@/components/RecordDialog.vue'
 import BatchAddDialog from '@/components/BatchAddDialog.vue'
 import { useRecordsStore } from '@/stores/records'
@@ -213,6 +219,12 @@ const handleSizeChange = (size: number) => {
 const handleCurrentChange = (page: number) => {
   recordsStore.pagination.page = page
   handleSearch(page)
+}
+
+const tableRowClassName = ({ row }: { row: BetRecord }) => {
+  if (row.result === '中奖') return 'bet-success-row'
+  if (row.result === '未中奖') return 'bet-failed-row'
+  return ''
 }
 
 const editRecord = (record: BetRecord) => {
@@ -305,14 +317,6 @@ onMounted(() => {
   color: #303133;
 }
 
-.header-actions {
-  display: flex;
-  flex: 0 0 auto;
-  gap: 12px;
-  margin-left: auto;
-  white-space: nowrap;
-}
-
 .search-card {
   flex: 0 0 auto;
   margin: 0;
@@ -324,31 +328,25 @@ onMounted(() => {
   padding: 12px 20px;
 }
 
-.toolbar-content {
+.search-card :deep(.el-form) {
   display: flex;
   align-items: center;
-  gap: 16px;
-}
-
-.search-form {
-  flex: 1 1 auto;
-  display: flex;
-  align-items: center;
+  justify-content: space-between;
   flex-wrap: wrap;
-  gap: 10px 18px;
-  min-width: 0;
+  row-gap: 12px;
 }
 
 .search-card :deep(.el-form-item) {
-  margin: 0;
+  margin-bottom: 0;
 }
 
-.search-card :deep(.el-date-editor.el-input__wrapper) {
+.search-card :deep(.el-date-editor.el-input__wrapper),
+.search-card :deep(.el-date-editor--daterange) {
   width: 300px;
 }
 
 .search-card :deep(.el-select) {
-  width: 120px;
+  width: 140px;
 }
 
 .search-card :deep(.el-input) {
@@ -357,6 +355,28 @@ onMounted(() => {
 
 .search-card :deep(.el-button + .el-button) {
   margin-left: 8px;
+}
+
+.search-card :deep(.el-form-item:not(.add-button-item) .el-button) {
+  margin-left: 8px;
+}
+
+.search-card :deep(.el-form-item:not(.add-button-item) .el-button:first-child) {
+  margin-left: 0;
+}
+
+.add-button-item {
+  margin-left: auto !important;
+}
+
+.search-card :deep(.add-button-item) {
+  margin-left: auto !important;
+}
+
+.search-card :deep(.add-button-item .el-form-item__content) {
+  display: flex;
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
 
 .table-wrapper {
@@ -373,6 +393,22 @@ onMounted(() => {
   background-color: #fff;
   color: #606266;
   font-weight: 600;
+}
+
+.table-wrapper :deep(.el-table__body tr.bet-success-row > td.el-table__cell) {
+  background-color: #8fd16a;
+}
+
+.table-wrapper :deep(.el-table__body tr.bet-success-row:hover > td.el-table__cell) {
+  background-color: #7bc457;
+}
+
+.table-wrapper :deep(.el-table__body tr.bet-failed-row > td.el-table__cell) {
+  background-color: #f56c6c;
+}
+
+.table-wrapper :deep(.el-table__body tr.bet-failed-row:hover > td.el-table__cell) {
+  background-color: #e85b5b;
 }
 
 .pagination-wrapper {

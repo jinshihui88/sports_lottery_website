@@ -134,11 +134,21 @@ public class BettingRecord {
     private String sportType;
 
     /**
+     * 创建人。
+     */
+    private String createBy;
+
+    /**
      * 创建时间。
      */
     @Schema(description = "创建时间")
     @TableField(value = "create_time", fill = FieldFill.INSERT)
     private LocalDateTime createTime;
+
+    /**
+     * 更新人。
+     */
+    private String updateBy;
 
     /**
      * 更新时间。
