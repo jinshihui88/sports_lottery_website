@@ -42,7 +42,7 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="结果">
+          <el-form-item label="投注结果">
             <el-select v-model="searchForm.result" placeholder="请选择" clearable>
               <el-option label="待开奖" value="待开奖" />
               <el-option label="中奖" value="中奖" />
@@ -107,7 +107,7 @@
             </template>
           </el-table-column>
           <el-table-column prop="odds" label="赔率" width="80" />
-          <el-table-column prop="result" label="结果" width="100">
+          <el-table-column prop="result" label="投注结果" width="100">
             <template #default="{ row }">
               <el-tag
                 :type="row.result === '中奖' ? 'success' : row.result === '未中奖' ? 'danger' : 'warning'"

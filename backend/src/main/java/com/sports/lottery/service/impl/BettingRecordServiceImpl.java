@@ -71,7 +71,7 @@ public class BettingRecordServiceImpl extends ServiceImpl<BettingRecordMapper, B
             wrapper.eq("result", query.getResult());
         }
         // 按创建时间倒序
-        wrapper.orderByDesc("create_time");
+        wrapper.orderByDesc("match_date");
         return page(page, wrapper);
     }
 
@@ -92,12 +92,11 @@ public class BettingRecordServiceImpl extends ServiceImpl<BettingRecordMapper, B
             record.setResult(convertResultToString(request.getResult()));
         }
         record.setActualWinnings(request.getActualWinnings());
-        //record.setMatchResult(request.getMatchResult());
+        record.setProfitLoss(request.getActualWinnings());
         record.setNotes(request.getNotes());
         record.setSportType(request.getSportType());
+        record.setCreateBy(String.valueOf(userId));
         record.setCreateTime(LocalDateTime.now());
-        record.setUpdateTime(LocalDateTime.now());
-
         return save(record);
     }
 

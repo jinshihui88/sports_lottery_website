@@ -39,9 +39,31 @@
 
 - 使用项目已有模式实现功能；不要为了单次需求引入新抽象、新框架或新目录结构。
 - Controller 只做请求接收、基础校验、当前用户解析和响应封装；业务逻辑放 Service。
+- Controller 层接口必须添加 Javadoc 格式的注释信息，说明接口用途、参数和返回值，例如：
+
+```java
+/**
+ * 根据字典类型查询字典数据
+ *
+ * @param dictType
+ * @return Result<List < DictDataResponse>>
+ */
+```
+
+- Service、Mapper 层接口的方法必须添加 Javadoc 格式的注释信息，实现类中不用添加，例如：
+
+```java
+/**
+ * 根据字典类型查询字典数据
+ *
+ * @param dictType
+ * @return Result<List < DictDataResponse>>
+ */
+```
+
 - 数据访问放 Mapper、Repository 或项目已有的数据访问层；不要在上层拼接复杂 SQL。
 - DTO、VO、Entity、Mapper XML、数据库脚本之间的字段变更要同步检查。
-- 实体类中的属性必须使用 Javadoc 格式添加注释信息，例如 `/** 用户ID */`，不要只使用行尾注释或普通 `//` 注释。
+- Entity、DTO、VO中的属性必须使用 Javadoc 格式添加注释信息，例如 `/** 用户ID */`，不要只使用行尾注释或普通 `//` 注释。
 - 对外响应结构、错误码、异常处理、分页参数等要沿用项目已有约定。
 - 注释只写在代码意图不明显的地方；不要添加解释显而易见代码的注释。
 - 不要添加遥测、Analytics、埋点或新的外部网络请求，除非用户明确要求。

@@ -117,10 +117,18 @@
           <el-input v-model="form.recommender" />
         </el-form-item>
         <el-form-item label="结果">
-          <el-select v-model="form.result" placeholder="-">
-            <el-option label="成功" value="1" />
-            <el-option label="失败" value="0" />
-            <el-option label="比赛中断" value="2" />
+          <el-select
+            v-model="form.result"
+            placeholder="-"
+            clearable
+            :loading="resultLoading"
+          >
+            <el-option
+              v-for="option in resultOptions"
+              :key="option.dictCode"
+              :label="option.dictLabel"
+              :value="option.dictCode"
+            />
           </el-select>
         </el-form-item>
       </el-form>
@@ -150,6 +158,12 @@ interface RecommendRecord {
   amount?: number | null
 }
 
+interface DictDataOption {
+  dictCode: string
+  dictLabel: string
+  sortOrder?: number | null
+}
+
 interface SearchForm {
   recommendDate?: string
   matchDesc?: string
@@ -161,6 +175,8 @@ const records = ref<RecommendRecord[]>([])
 const loading = ref(false)
 const recommenderOptions = ref<string[]>([])
 const recommenderLoading = ref(false)
+const resultOptions = ref<DictDataOption[]>([])
+const resultLoading = ref(false)
 
 // 查询表单
 const searchForm = reactive<SearchForm>({
@@ -183,6 +199,13 @@ const isSuccessResult = (r?: string | null) => r === '1' || r === '成功'
 
 const isFailedResult = (r?: string | null) => r === '0' || r === '失败'
 
+const fallbackResultText = (r?: string | null) => {
+  if (isSuccessResult(r)) return '成功'
+  if (isFailedResult(r)) return '失败'
+  if (r === '2' || r === '比赛中断') return '比赛中断'
+  return '-'
+}
+
 const resultTag = (r?: string | null) => {
   if (isSuccessResult(r)) return 'success'
   if (isFailedResult(r)) return 'danger'
@@ -190,10 +213,9 @@ const resultTag = (r?: string | null) => {
 }
 
 const resultText = (r?: string | null) => {
-  if (isSuccessResult(r)) return '成功'
-  if (isFailedResult(r)) return '失败'
-  if (r === '2') return '比赛中断'
-  return '-'
+  if (!r) return '-'
+  const option = resultOptions.value.find(item => item.dictCode === r || item.dictLabel === r)
+  return option?.dictLabel || fallbackResultText(r)
 }
 
 const tableRowClassName = ({ row }: { row: RecommendRecord }) => {
@@ -214,6 +236,29 @@ const fetchRecommenders = async () => {
     ElMessage.error('推荐人列表加载失败')
   } finally {
     recommenderLoading.value = false
+  }
+}
+
+const fetchRecommendResultOptions = async () => {
+  resultLoading.value = true
+
+  try {
+    const res = await api.get('/dict/data', {
+      params: { dictType: 'recommend_result' }
+    }) as ApiResponse<DictDataOption[]>
+
+    if (res && res.code === 200) {
+      resultOptions.value = (res.data || [])
+        .filter(item => item.dictCode && item.dictLabel)
+        .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+      return
+    }
+
+    ElMessage.error(res?.message || '推荐结果字典加载失败')
+  } catch (error) {
+    ElMessage.error('推荐结果字典加载失败')
+  } finally {
+    resultLoading.value = false
   }
 }
 
@@ -304,6 +349,7 @@ const remove = async (id?: number) => {
 
 onMounted(() => {
   fetchRecommenders()
+  fetchRecommendResultOptions()
   fetchList(1)
 })
 </script>

@@ -26,11 +26,15 @@ public class SysDictController {
 
     private final SysDictDataService sysDictDataService;
 
+    /**
+     * 根据字典类型查询字典数据
+     *
+     * @param dictType
+     * @return Result<List < DictDataResponse>>
+     */
     @GetMapping("/data")
     @Operation(summary = "根据字典类型查询字典数据")
-    public Result<List<DictDataResponse>> listByDictType(
-            @Parameter(description = "字典类型编码", example = "recommend_result")
-            @RequestParam(required = false) String dictType) {
+    public Result<List<DictDataResponse>> listByDictType(@RequestParam(required = false) String dictType) {
         try {
             return Result.success(sysDictDataService.listByDictType(dictType));
         } catch (IllegalArgumentException e) {
