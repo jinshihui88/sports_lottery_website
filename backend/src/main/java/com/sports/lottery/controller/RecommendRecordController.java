@@ -96,8 +96,8 @@ public class RecommendRecordController {
             if (userId == null)
                 return Result.error("未登录");
             record.setUserId(userId);
+            record.setCreateBy(String.valueOf(userId));
             record.setCreateTime(LocalDateTime.now());
-            record.setUpdateTime(LocalDateTime.now());
             return recommendRecordService.save(record) ? Result.success("创建成功") : Result.error("创建失败");
         } catch (Exception e) {
             e.printStackTrace();
@@ -124,7 +124,7 @@ public class RecommendRecordController {
             if (old == null || !old.getUserId().equals(userId))
                 return Result.error("无权限或记录不存在");
             record.setId(id);
-            record.setUserId(userId);
+            record.setUpdateBy(String.valueOf(userId));
             record.setUpdateTime(LocalDateTime.now());
             return recommendRecordService.updateById(record) ? Result.success("更新成功") : Result.error("更新失败");
         } catch (Exception e) {
