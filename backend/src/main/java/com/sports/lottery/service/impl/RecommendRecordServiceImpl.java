@@ -1,6 +1,6 @@
 package com.sports.lottery.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -27,37 +27,38 @@ public class RecommendRecordServiceImpl extends ServiceImpl<RecommendRecordMappe
     @Override
     public IPage<RecommendRecord> pageByUser(Long userId, int current, int size) {
         Page<RecommendRecord> page = new Page<>(current, size);
-        QueryWrapper<RecommendRecord> wrapper = new QueryWrapper<>();
-        wrapper.eq("user_id", userId).orderByDesc("recommend_date", "create_time");
+        LambdaQueryWrapper<RecommendRecord> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(RecommendRecord::getUserId, userId)
+                .orderByDesc(RecommendRecord::getRecommendDate, RecommendRecord::getCreateTime);
         return page(page, wrapper);
     }
 
     @Override
     public IPage<RecommendRecord> pageByUserWithConditions(Long userId, int current, int size, RecommendRecordQuery query) {
         Page<RecommendRecord> page = new Page<>(current, size);
-        QueryWrapper<RecommendRecord> wrapper = new QueryWrapper<>();
+        LambdaQueryWrapper<RecommendRecord> wrapper = new LambdaQueryWrapper<>();
 
         // 基础条件：用户ID
-        wrapper.eq("user_id", userId);
+        wrapper.eq(RecommendRecord::getUserId, userId);
         // 推荐日期条件
         if (StringUtils.hasText(query.getRecommendDate())) {
             try {
                 LocalDate date = LocalDate.parse(query.getRecommendDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                wrapper.eq("recommend_date", date);
+                wrapper.eq(RecommendRecord::getRecommendDate, date);
             } catch (DateTimeParseException e) {
                 e.printStackTrace();
             }
         }
         // 比赛信息条件（模糊查询）
         if (StringUtils.hasText(query.getMatchDesc())) {
-            wrapper.like("match_desc", query.getMatchDesc());
+            wrapper.like(RecommendRecord::getMatchDesc, query.getMatchDesc());
         }
         // 推荐人条件（模糊查询）
         if (StringUtils.hasText(query.getRecommender())) {
-            wrapper.like("recommender", query.getRecommender());
+            wrapper.like(RecommendRecord::getRecommender, query.getRecommender());
         }
         // 排序：按推荐日期降序，创建时间降序
-        wrapper.orderByDesc("recommend_date", "create_time");
+        wrapper.orderByDesc(RecommendRecord::getRecommendDate, RecommendRecord::getCreateTime);
         return page(page, wrapper);
     }
 

@@ -1,6 +1,6 @@
 package com.sports.lottery.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sports.lottery.dto.LoginRequest;
 import com.sports.lottery.dto.RegisterRequest;
@@ -35,8 +35,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         
         // 检查邮箱是否已存在
-        QueryWrapper<User> emailQuery = new QueryWrapper<>();
-        emailQuery.eq("email", request.getEmail());
+        LambdaQueryWrapper<User> emailQuery = new LambdaQueryWrapper<>();
+        emailQuery.eq(User::getEmail, request.getEmail());
         if (getOne(emailQuery) != null) {
             throw new RuntimeException("邮箱已被注册");
         }
@@ -82,8 +82,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     
     @Override
     public User getUserByUsername(String username) {
-        QueryWrapper<User> query = new QueryWrapper<>();
-        query.eq("username", username);
+        LambdaQueryWrapper<User> query = new LambdaQueryWrapper<>();
+        query.eq(User::getUsername, username);
         return getOne(query);
     }
     

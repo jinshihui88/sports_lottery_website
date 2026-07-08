@@ -16,9 +16,10 @@ interface BettingRecordApiItem {
   betOption?: string
   betAmount: number
   odds: number
-  result?: string | null
+  result?: string | number | null
   actualWinnings?: number
   actualWinning?: number
+  winAmount?: number
   profitLoss?: number
   profit?: number
   createTime?: string
@@ -46,7 +47,7 @@ interface BettingRecordRequest {
   betAmount: number
   odds: number
   result: number
-  actualWinnings?: number
+  winAmount?: number
   sportType: string
 }
 
@@ -57,6 +58,9 @@ const resultParamMap: Record<string, number> = {
 }
 
 const resultTextMap: Record<string, BetRecord['result']> = {
+  0: '待开奖',
+  1: '中奖',
+  2: '未中奖',
   WIN: '中奖',
   LOSE: '未中奖',
   DRAW: '待开奖'
@@ -84,7 +88,7 @@ const toBettingRecordRequest = (record: BetRecordForm): BettingRecordRequest => 
   betAmount: record.betAmount,
   odds: record.odds,
   result: resultParamMap[record.result],
-  actualWinnings: record.result === '中奖' ? record.actualWinning || 0 : undefined,
+  winAmount: record.result === '中奖' ? record.actualWinning || 0 : undefined,
   sportType: sportParamMap[record.sportType]
 })
 
@@ -101,7 +105,7 @@ const toBetRecord = (record: BettingRecordApiItem): BetRecord => ({
   betAmount: Number(record.betAmount || 0),
   odds: Number(record.odds || 0),
   result: record.result ? (resultTextMap[record.result] || record.result as BetRecord['result']) : '待开奖',
-  actualWinning: Number(record.actualWinnings ?? record.actualWinning ?? 0),
+  actualWinning: Number(record.winAmount ?? record.actualWinnings ?? record.actualWinning ?? 0),
   profit: Number(record.profitLoss ?? record.profit ?? 0),
   createdAt: record.createTime || record.createdAt || '',
   updatedAt: record.updateTime || record.updatedAt || ''
@@ -302,19 +306,21 @@ export const useRecordsStore = defineStore('records', () => {
   // 批量添加记录
   const batchAddRecords = async (recordsList: Omit<BetRecord, 'id' | 'userId' | 'createdAt' | 'updatedAt'>[]) => {
     try {
-      const newRecords = recordsList.map(record => ({
-        ...record,
-        id: Date.now() + Math.random(),
-        userId: 1,
-        profit: record.result === '中奖' ? (record.actualWinning || 0) - record.betAmount : -record.betAmount,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      }))
+      if (recordsList.length === 0) {
+        return { success: false, error: '请先添加比赛记录' }
+      }
 
-      mockRecords.unshift(...newRecords)
-      await fetchRecords() // 刷新列表
+      const res = await api.post('/betting/records/batch', recordsList.map(toBettingRecordRequest)) as ApiResponse<string>
+      if (res.code !== 200) {
+        return { success: false, error: res.message || '批量添加记录失败' }
+      }
 
-      return { success: true, data: newRecords }
+      await fetchRecords({
+        page: 1,
+        pageSize: pagination.value.pageSize
+      })
+
+      return { success: true, data: res.data }
     } catch (error) {
       return { success: false, error: '批量添加记录失败' }
     }

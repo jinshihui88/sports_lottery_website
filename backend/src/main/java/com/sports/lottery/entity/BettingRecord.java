@@ -39,7 +39,7 @@ public class BettingRecord {
      * 投注日期。
      */
     @Schema(description = "投注日期")
-    @TableField("match_date")
+    @TableField("bet_date")
     private LocalDate betDate;
 
     /**
@@ -92,18 +92,18 @@ public class BettingRecord {
     private BigDecimal odds;
 
     /**
-     * 投注结果，取值如 WIN、LOSE、DRAW。
+     * 投注结果：1-中奖，2-未中奖
      */
-    @Schema(description = "投注结果：WIN-赢，LOSE-输，DRAW-平")
+    @Schema(description = "投注结果：1-中奖，2-未中奖")
     @TableField("result")
-    private String result;
+    private Integer result;
 
     /**
      * 实际奖金，单位为元。
      */
     @Schema(description = "实际奖金（元）")
     @TableField("win_amount")
-    private BigDecimal actualWinnings;
+    private BigDecimal winAmount;
 
     /**
      * 盈亏金额，单位为元。
@@ -112,12 +112,6 @@ public class BettingRecord {
     @TableField("profit_loss")
     private BigDecimal profitLoss;
 
-    /**
-     * 比赛结果。
-     */
-    /*@Schema(description = "比赛结果")
-    @TableField("match_result")
-    private String matchResult;*/
 
     /**
      * 备注信息。

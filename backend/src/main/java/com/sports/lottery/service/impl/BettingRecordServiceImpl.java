@@ -1,6 +1,6 @@
 package com.sports.lottery.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -36,42 +36,42 @@ public class BettingRecordServiceImpl extends ServiceImpl<BettingRecordMapper, B
     @Override
     public IPage<BettingRecord> getRecordPage(BettingRecordQuery query) {
         Page<BettingRecord> page = new Page<>(query.getPageNum(), query.getPageSize());
-        QueryWrapper<BettingRecord> wrapper = new QueryWrapper<>();
+        LambdaQueryWrapper<BettingRecord> wrapper = new LambdaQueryWrapper<>();
 
         // 用户ID条件
         if (query.getUserId() != null) {
-            wrapper.eq("user_id", query.getUserId());
+            wrapper.eq(BettingRecord::getUserId, query.getUserId());
         }
 
         // 日期范围条件
-        if (query.getStartDate() != null) {
+        /*if (query.getStartDate() != null) {
             wrapper.ge("match_date", query.getStartDate());
         }
         if (query.getEndDate() != null) {
             wrapper.le("match_date", query.getEndDate());
-        }
+        }*/
 
         // 运动类型条件
         if (StringUtils.hasText(query.getSportType())) {
-            wrapper.eq("sport_type", query.getSportType());
+            wrapper.eq(BettingRecord::getSportType, query.getSportType());
         }
 
         // 联赛名称
         if (StringUtils.hasText(query.getLeague())) {
-            wrapper.like("league", query.getLeague());
+            wrapper.like(BettingRecord::getLeague, query.getLeague());
         }
 
         // 投注类型条件
         if (StringUtils.hasText(query.getBetType())) {
-            wrapper.eq("bet_type", query.getBetType());
+            wrapper.eq(BettingRecord::getBetType, query.getBetType());
         }
 
         // 投注结果结果条件
         if (query.getResult() != null) {
-            wrapper.eq("result", query.getResult());
+            wrapper.eq(BettingRecord::getResult, query.getResult());
         }
         // 按创建时间倒序
-        wrapper.orderByDesc("match_date");
+        wrapper.orderByDesc(BettingRecord::getCreateTime);
         return page(page, wrapper);
     }
 
@@ -87,16 +87,13 @@ public class BettingRecordServiceImpl extends ServiceImpl<BettingRecordMapper, B
         record.setBetOption(request.getBetOption());
         record.setOdds(request.getOdds());
         record.setBetAmount(request.getBetAmount());
-        // 处理结果转换：Integer -> String
-        if (request.getResult() != null) {
-            record.setResult(convertResultToString(request.getResult()));
-        }
-        record.setActualWinnings(request.getActualWinnings());
-        record.setProfitLoss(request.getActualWinnings());
+        record.setResult(request.getResult());
+
+        record.setWinAmount(request.getWinAmount());
+        record.setProfitLoss(request.getWinAmount());
         record.setNotes(request.getNotes());
         record.setSportType(request.getSportType());
         record.setCreateBy(String.valueOf(userId));
-        record.setCreateTime(LocalDateTime.now());
         return save(record);
     }
 
@@ -113,19 +110,14 @@ public class BettingRecordServiceImpl extends ServiceImpl<BettingRecordMapper, B
             record.setBetOption(request.getBetOption());
             record.setOdds(request.getOdds());
             record.setBetAmount(request.getBetAmount());
-            // 处理结果转换：Integer -> String
-            if (request.getResult() != null) {
-                record.setResult(convertResultToString(request.getResult()));
-            }
-            record.setActualWinnings(request.getActualWinnings());
-            //record.setMatchResult(request.getMatchResult());
+            record.setResult(request.getResult());
+
+            record.setWinAmount(request.getWinAmount());
+            record.setProfitLoss(request.getWinAmount());
             record.setNotes(request.getNotes());
             record.setSportType(request.getSportType());
-            record.setCreateTime(LocalDateTime.now());
-            record.setUpdateTime(LocalDateTime.now());
             return record;
         }).collect(java.util.stream.Collectors.toList());
-
         return saveBatch(records);
     }
 
@@ -144,16 +136,11 @@ public class BettingRecordServiceImpl extends ServiceImpl<BettingRecordMapper, B
         record.setBetOption(request.getBetOption());
         record.setOdds(request.getOdds());
         record.setBetAmount(request.getBetAmount());
-        // 处理结果转换：Integer -> String
-        if (request.getResult() != null) {
-            record.setResult(convertResultToString(request.getResult()));
-        }
-        record.setActualWinnings(request.getActualWinnings());
-        //record.setMatchResult(request.getMatchResult());
+        record.setResult(request.getResult());
+        record.setWinAmount(request.getWinAmount());
         record.setNotes(request.getNotes());
         record.setSportType(request.getSportType());
         record.setUpdateTime(LocalDateTime.now());
-
         return updateById(record);
     }
 
@@ -169,13 +156,13 @@ public class BettingRecordServiceImpl extends ServiceImpl<BettingRecordMapper, B
 
     @Override
     public Map<String, Object> getUserStatistics(Long userId, LocalDate startDate, LocalDate endDate) {
-        QueryWrapper<BettingRecord> wrapper = new QueryWrapper<>();
-        wrapper.eq("user_id", userId);
+        LambdaQueryWrapper<BettingRecord> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(BettingRecord::getUserId, userId);
         if (startDate != null) {
-            wrapper.ge("match_date", startDate);
+            wrapper.ge(BettingRecord::getBetDate, startDate);
         }
         if (endDate != null) {
-            wrapper.le("match_date", endDate);
+            wrapper.le(BettingRecord::getBetDate, endDate);
         }
 
         List<BettingRecord> records = list(wrapper);
@@ -194,7 +181,7 @@ public class BettingRecordServiceImpl extends ServiceImpl<BettingRecordMapper, B
 
         // 总盈利金额
         BigDecimal totalWinAmount = records.stream()
-                .map(record -> record.getActualWinnings() != null ? record.getActualWinnings() : BigDecimal.ZERO)
+                .map(record -> record.getWinAmount() != null ? record.getWinAmount() : BigDecimal.ZERO)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         statistics.put("totalWinAmount", totalWinAmount);
 
@@ -220,7 +207,6 @@ public class BettingRecordServiceImpl extends ServiceImpl<BettingRecordMapper, B
         // 胜率
         double winRate = records.size() > 0 ? (double) winCount / records.size() * 100 : 0;
         statistics.put("winRate", Math.round(winRate * 100.0) / 100.0);
-
         return statistics;
     }
 
@@ -239,25 +225,4 @@ public class BettingRecordServiceImpl extends ServiceImpl<BettingRecordMapper, B
         return bettingRecordMapper.getBetTypeStatistics(userId, startDate, endDate);
     }
 
-    /**
-     * 将结果代码转换为字符串
-     * 
-     * @param result 结果代码：0-待开奖，1-中奖，2-未中奖
-     * @return 结果字符串：WIN-赢，LOSE-输，DRAW-平
-     */
-    private String convertResultToString(Integer result) {
-        if (result == null) {
-            return null;
-        }
-        switch (result) {
-            case 0:
-                return null; // 待开奖
-            case 1:
-                return "WIN"; // 中奖
-            case 2:
-                return "LOSE"; // 未中奖
-            default:
-                return null;
-        }
-    }
 }

@@ -110,10 +110,13 @@ public class BettingRecordController {
 
     /**
      * 批量添加投注记录
+     *
+     * @param requests
+     * @param httpRequest
+     * @return Result<String> 批量添加结果
      */
     @PostMapping("/records/batch")
-    public Result<String> batchAddRecords(@Validated @RequestBody List<BettingRecordRequest> requests,
-            HttpServletRequest httpRequest) {
+    public Result<String> batchAddRecords(@Validated @RequestBody List<BettingRecordRequest> requests, HttpServletRequest httpRequest) {
         try {
             Long userId = getUserIdFromRequest(httpRequest);
             if (userId == null) {
@@ -165,6 +168,10 @@ public class BettingRecordController {
 
     /**
      * 删除投注记录
+     *
+     * @param id 投注记录ID
+     * @param request
+     * @return Result<String> 删除结果
      */
     @DeleteMapping("/records/{id}")
     public Result<String> deleteRecord(@PathVariable Long id, HttpServletRequest request) {
@@ -196,6 +203,10 @@ public class BettingRecordController {
 
     /**
      * 批量删除投注记录
+     *
+     * @param recordIds 要删除的投注记录ID列表
+     * @param request
+     * @return Result<String> 批量删除结果
      */
     @DeleteMapping("/records/batch")
     public Result<String> batchDeleteRecords(@RequestBody List<Long> recordIds, HttpServletRequest request) {
@@ -225,6 +236,11 @@ public class BettingRecordController {
 
     /**
      * 获取用户统计数据
+     *
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @param request HTTP请求对象
+     * @return Result<Map<String, Object>> 用户统计数据
      */
     @GetMapping("/statistics")
     public Result<Map<String, Object>> getUserStatistics(

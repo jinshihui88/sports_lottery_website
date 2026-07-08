@@ -27,6 +27,13 @@ public class BettingRecordRequest {
     private LocalDate betDate;
 
     /**
+     * 运动类型，例如 football 表示足球，basketball 表示篮球。
+     */
+    @Schema(description = "运动类型：football-足球，basketball-篮球", required = true)
+    @NotBlank(message = "运动类型不能为空")
+    private String sportType;
+
+    /**
      * 联赛名称。
      */
     @Schema(description = "联赛名称", required = true)
@@ -78,33 +85,20 @@ public class BettingRecordRequest {
     private BigDecimal odds;
 
     /**
-     * 投注结果：0 表示待开奖，1 表示中奖，2 表示未中奖。
+     * 投注结果：1 表示中奖，2 表示未中奖。
      */
-    @Schema(description = "投注结果：0-待开奖，1-中奖，2-未中奖")
+    @Schema(description = "投注结果：1-中奖，2-未中奖")
     private Integer result;
 
     /**
      * 实际奖金，单位为元。
      */
     @Schema(description = "实际奖金（元）")
-    private BigDecimal actualWinnings;
-
-    /**
-     * 比赛结果。
-     */
-    @Schema(description = "比赛结果")
-    private String matchResult;
+    private BigDecimal winAmount;
 
     /**
      * 备注信息。
      */
     @Schema(description = "备注")
     private String notes;
-
-    /**
-     * 运动类型，例如 football 表示足球，basketball 表示篮球。
-     */
-    @Schema(description = "运动类型：football-足球，basketball-篮球", required = true)
-    @NotBlank(message = "运动类型不能为空")
-    private String sportType;
 }
